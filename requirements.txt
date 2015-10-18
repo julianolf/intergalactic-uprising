@@ -1,2 +1,3 @@
+kezmenu3==0.3.6
 pygame==1.9.2pre
 wsgiref==0.1.2
