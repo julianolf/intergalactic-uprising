@@ -29,8 +29,8 @@ class Menu(object):
 		height = self.screen.get_height()
 		background = image.load('game/res/sprite/background/purple.png')
 
-		for y in range(0, height, 256):
-			for x in range(0, width, 256):
+		for y in range(0, height, 240):
+			for x in range(0, width, 240):
 				self.screen.blit(background, (x, y))
 
 	def draw(self):
