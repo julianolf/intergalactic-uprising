@@ -1,5 +1,0 @@
-PyTMX==3.20.12
-kezmenu3==0.3.6
-pygame==1.9.2pre
-six==1.10.0
-wsgiref==0.1.2
