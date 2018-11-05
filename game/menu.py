@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from pygame import display, event, image
 from pygame.font import Font
 from pygame.time import Clock
@@ -10,8 +8,6 @@ class Menu(object):
     """Display game options"""
 
     def __init__(self, screen, position):
-        super(Menu, self).__init__()
-
         self.running = True
         self.screen = screen
         self.position = position

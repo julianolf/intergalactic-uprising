@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-
-from game import game
+import game
 
 if __name__ == '__main__':
-    game.start()
+    intergalactic_uprising = game.Game()
+    intergalactic_uprising.start()

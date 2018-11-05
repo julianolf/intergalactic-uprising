@@ -1,17 +1,18 @@
-# -*- coding: utf-8 -*-
-
 from pygame import init, display
 from .menu import Menu
 
 
-def start():
-    # Initialize pygame modules
-    init()
+class Game(object):
+    """Intergalactic Uprise Game"""
 
-    # Initialize and display main menu
-    screen_width = 768
-    screen_height = 512
-    screen = display.set_mode((screen_width, screen_height))
-    menu_pos = (screen_width / 2 - 100, screen_height / 2 - 50)
-    main_menu = Menu(screen, menu_pos)
-    main_menu.draw()
+    _screen_size = (768, 512)
+    _menu_pos = ((_screen_size[0]/2-100), (_screen_size[1]/2-50))
+
+    def start(self):
+        # Initialize pygame modules
+        init()
+
+        # Initialize and display main menu
+        self.screen = display.set_mode(self._screen_size)
+        self.main_menu = Menu(self.screen, self._menu_pos)
+        self.main_menu.draw()
