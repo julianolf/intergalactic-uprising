@@ -1,10 +1,13 @@
 import os
 
 # General settings.
-WIDTH = 768
-HEIGHT = 512
-FPS = 30
+WIDTH = 600
+HEIGHT = 600
+FPS = 60
+
+# Colors definitions.
 BLACK = (0, 0, 0)
+BLUE = (0, 0, 255)
 
 # Resources path settings.
 RES_DIR = os.path.join(os.path.dirname(__file__), 'res')
@@ -24,3 +27,6 @@ MENU_FONT = os.path.join(FNT_DIR, 'kenvector_future.ttf')
 MENU_FONT_SIZE = 32
 MENU_FONT_COLOR = (205, 205, 205)
 MENU_FONT_FOCUS_COLOR = (255, 255, 255)
+
+# Player settings.
+SPEEDX = 5

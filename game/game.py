@@ -1,6 +1,7 @@
 import pygame
 from game import settings
 from game import Menu
+from game import Player
 
 
 class Game(object):
@@ -13,6 +14,7 @@ class Game(object):
         self.screen = pygame.display.set_mode(
             (settings.WIDTH, settings.HEIGHT)
         )
+        self.sprites = pygame.sprite.Group()
         self.running = False
         self.clock = pygame.time.Clock()
         self.main_menu = Menu(self)
@@ -20,6 +22,8 @@ class Game(object):
 
     def new(self):
         """Initializes a new game."""
+        self.sprites.empty()
+        self.player = Player(self, groups=[self.sprites])
         self.running = True
         self.run()
 
@@ -46,9 +50,10 @@ class Game(object):
 
     def update(self):
         """Update sprites."""
-        pass
+        self.sprites.update()
 
     def draw(self):
         """Put everything on screen."""
         self.screen.fill(settings.BLACK)
+        self.sprites.draw(self.screen)
         pygame.display.flip()
