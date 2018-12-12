@@ -1,0 +1,4 @@
+WIDTH = 768
+HEIGHT = 512
+FPS = 30
+BLACK = (0, 0, 0)
