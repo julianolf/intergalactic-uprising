@@ -1,6 +1,6 @@
 import pygame
 from game import settings
-from game import menu
+from game import Menu
 
 
 class Game(object):
@@ -15,7 +15,7 @@ class Game(object):
         )
         self.running = False
         self.clock = pygame.time.Clock()
-        self.main_menu = menu.Menu(self)
+        self.main_menu = Menu(self)
         self.main_menu.draw()
 
     def new(self):
