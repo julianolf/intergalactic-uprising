@@ -1,4 +1,5 @@
 import pygame
+import random
 from game import settings
 
 
@@ -37,3 +38,39 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = settings.WIDTH
         if self.rect.left < 0:
             self.rect.left = 0
+
+
+class Enemy(pygame.sprite.Sprite):
+    """Enemies spaceship."""
+
+    def __init__(self, game, groups=[]):
+        """Initializes a new enemy.
+
+        Args:
+            game: The running game instance.
+            groups: A list of pygame.sprite.Group.
+        """
+        super(Enemy, self).__init__(groups)
+        self.game = game
+        self.image = pygame.Surface((50, 50))
+        self.image.fill(settings.RED)
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randrange(settings.WIDTH - self.rect.width)
+        self.rect.y = random.randrange(-100, -40)
+        self.speedx = random.randrange(-3, 3)
+        self.speedy = random.randrange(1, 8)
+
+    def update(self):
+        """Update enemy sprite.
+
+        Perform animations like moving and shooting."""
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+        # If enemy left screen respawn it.
+        if (self.rect.top > settings.HEIGHT + 10
+                or self.rect.right < -10
+                or self.rect.left > settings.WIDTH + 10):
+            self.rect.x = random.randrange(settings.WIDTH - self.rect.width)
+            self.rect.y = random.randrange(-100, -40)
+            self.speedx = random.randrange(-3, 3)
+            self.speedy = random.randrange(1, 8)

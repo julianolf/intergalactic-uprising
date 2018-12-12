@@ -1,7 +1,7 @@
 import pygame
 from game import settings
 from game import Menu
-from game import Player
+from game import Player, Enemy
 
 
 class Game(object):
@@ -15,6 +15,7 @@ class Game(object):
             (settings.WIDTH, settings.HEIGHT)
         )
         self.sprites = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
         self.running = False
         self.clock = pygame.time.Clock()
         self.main_menu = Menu(self)
@@ -23,7 +24,10 @@ class Game(object):
     def new(self):
         """Initializes a new game."""
         self.sprites.empty()
+        self.enemies.empty()
         self.player = Player(self, groups=[self.sprites])
+        for _ in range(8):
+            Enemy(self, groups=[self.sprites, self.enemies])
         self.running = True
         self.run()
 
