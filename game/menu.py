@@ -42,8 +42,8 @@ class Menu(object):
             ['EXIT', self.exit])
 
         pos = (
-            (self.game.screen.get_width() / 2 - 100),
-            (self.game.screen.get_height() / 2 - 50)
+            (settings.WIDTH / 2 - 100),
+            (settings.HEIGHT / 2 - 50)
         )
         self.menu.position = pos
         self.menu.color = settings.MENU_FONT_COLOR
