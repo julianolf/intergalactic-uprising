@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 pygame = "*"
 "kezmenu3" = "*"
-pytmx = "*"
 
 [dev-packages]
 "flake8" = "*"
