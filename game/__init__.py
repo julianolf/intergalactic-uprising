@@ -1,3 +1,3 @@
-from .game import Game
+from game.game import Game
 
 __all__ = ['Game']
