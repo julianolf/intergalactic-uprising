@@ -17,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.game = game
         self.image = pygame.image.load(settings.PLAYER_IMG)
         self.rect = self.image.get_rect()
+        self.radius = int(self.rect.width * .9 / 2)
         self.rect.centerx = settings.WIDTH / 2
         self.rect.bottom = settings.HEIGHT - 10
         self.reload = 0
@@ -32,7 +33,8 @@ class Player(pygame.sprite.Sprite):
 
     def hit(self):
         """Checks if the player has hit something."""
-        if pygame.sprite.spritecollide(self, self.game.enemies, False):
+        if pygame.sprite.spritecollide(
+                self, self.game.enemies, False, pygame.sprite.collide_circle):
             self.game.running = False
 
     def update(self):
@@ -73,6 +75,7 @@ class Enemy(pygame.sprite.Sprite):
         self.game = game
         self.image = pygame.image.load(random.choice(settings.ENEMIES_IMG))
         self.rect = self.image.get_rect()
+        self.radius = int(self.rect.width * .9 / 2)
         self.spawn()
 
     def spawn(self):
@@ -111,6 +114,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.Surface((5, 5))
         self.image.fill(settings.WHITE)
         self.rect = self.image.get_rect()
+        self.radius = int(self.rect.width * .9 / 2)
         self.rect.centerx, self.rect.bottom = pos
         self.speedy = -10
 
@@ -125,7 +129,8 @@ class Bullet(pygame.sprite.Sprite):
         # the enemy and the bullet. Also spawns a
         # new enemy for each one killed.
         for hit in pygame.sprite.groupcollide(
-                self.game.bullets, self.game.enemies, True, True):
+                self.game.bullets, self.game.enemies, True, True,
+                pygame.sprite.collide_circle):
             self.game.spawn_enemy()
         # If the bullet has left the screen kill it.
         if self.rect.bottom < 0:
