@@ -1,7 +1,7 @@
 import pygame
 from game import settings
 from game import Menu
-from game import Player, Enemy
+from game import Player, Enemy, Meteor
 
 
 class Game(object):
@@ -16,6 +16,7 @@ class Game(object):
         )
         self.sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.meteors = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.running = False
         self.clock = pygame.time.Clock()
@@ -26,10 +27,13 @@ class Game(object):
         """Initializes a new game."""
         self.sprites.empty()
         self.enemies.empty()
+        self.meteors.empty()
         self.bullets.empty()
         self.player = Player(self, groups=[self.sprites])
-        for _ in range(8):
+        for _ in range(5):
             self.spawn_enemy()
+        for _ in range(4):
+            self.spawn_meteor()
         self.running = True
         self.run()
 
@@ -75,3 +79,7 @@ class Game(object):
     def spawn_enemy(self):
         """Spawns a new enemy."""
         Enemy(self, groups=[self.sprites, self.enemies])
+
+    def spawn_meteor(self):
+        """Spawns a new meteor."""
+        Meteor(self, groups=[self.sprites, self.meteors])

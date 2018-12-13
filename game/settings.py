@@ -20,6 +20,7 @@ SND_DIR = os.path.join(RES_DIR, 'sound')
 SPR_DIR = os.path.join(RES_DIR, 'sprite')
 SPR_BG_DIR = os.path.join(SPR_DIR, 'background')
 SPR_EN_DIR = os.path.join(SPR_DIR, 'enemy')
+SPR_MT_DIR = os.path.join(SPR_DIR, 'meteor')
 SPR_PL_DIR = os.path.join(SPR_DIR, 'player')
 SPR_UI_DIR = os.path.join(SPR_DIR, 'ui')
 
@@ -34,6 +35,18 @@ ENEMIES_IMG = [os.path.join(SPR_EN_DIR, img) for img in (
     'enemy_green3.png', 'enemy_green4.png', 'enemy_green5.png',
     'enemy_red1.png', 'enemy_red2.png', 'enemy_red3.png',
     'enemy_red4.png', 'enemy_red5.png'
+)]
+METEORS_IMG = [os.path.join(SPR_MT_DIR, img) for img in (
+    'meteorBrown_big1.png', 'meteorBrown_big2.png',
+    'meteorBrown_big3.png', 'meteorBrown_big4.png',
+    'meteorBrown_med1.png', 'meteorBrown_med2.png',
+    'meteorBrown_small1.png', 'meteorBrown_small2.png',
+    'meteorBrown_tiny1.png', 'meteorBrown_tiny2.png',
+    'meteorGrey_big1.png', 'meteorGrey_big2.png',
+    'meteorGrey_big3.png', 'meteorGrey_big4.png',
+    'meteorGrey_med1.png', 'meteorGrey_med2.png',
+    'meteorGrey_small1.png', 'meteorGrey_small2.png',
+    'meteorGrey_tiny1.png', 'meteorGrey_tiny2.png'
 )]
 
 # Menu settings.
