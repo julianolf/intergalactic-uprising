@@ -19,11 +19,16 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = settings.WIDTH / 2
         self.rect.bottom = settings.HEIGHT - 10
+        self.reload = 0
 
     def shoot(self):
         """Shoots a new bullet."""
-        pos = (self.rect.centerx, self.rect.top + 1)
-        Bullet(self.game, pos, groups=[self.game.sprites, self.game.bullets])
+        now = pygame.time.get_ticks()
+        if now - self.reload > 300:
+            self.reload = now
+            pos = (self.rect.centerx, self.rect.top + 1)
+            groups = [self.game.sprites, self.game.bullets]
+            Bullet(self.game, pos, groups)
 
     def hit(self):
         """Checks if the player has hit something."""
