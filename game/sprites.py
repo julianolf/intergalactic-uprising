@@ -73,6 +73,10 @@ class Enemy(pygame.sprite.Sprite):
         self.game = game
         self.image = pygame.image.load(random.choice(settings.ENEMIES_IMG))
         self.rect = self.image.get_rect()
+        self.spawn()
+
+    def spawn(self):
+        """Defines its start position and directions speed."""
         self.rect.x = random.randrange(settings.WIDTH - self.rect.width)
         self.rect.y = random.randrange(-100, -40)
         self.speedx = random.randrange(-3, 3)
@@ -88,10 +92,7 @@ class Enemy(pygame.sprite.Sprite):
         if (self.rect.top > settings.HEIGHT + 10
                 or self.rect.right < -10
                 or self.rect.left > settings.WIDTH + 10):
-            self.rect.x = random.randrange(settings.WIDTH - self.rect.width)
-            self.rect.y = random.randrange(-100, -40)
-            self.speedx = random.randrange(-3, 3)
-            self.speedy = random.randrange(1, 8)
+            self.spawn()
 
 
 class Bullet(pygame.sprite.Sprite):
