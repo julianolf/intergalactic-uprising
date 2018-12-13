@@ -7,7 +7,9 @@ FPS = 60
 
 # Colors definitions.
 BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
@@ -23,6 +25,16 @@ SPR_UI_DIR = os.path.join(SPR_DIR, 'ui')
 
 # Image resources.
 BLACK_BG_IMG = os.path.join(SPR_BG_DIR, 'black.png')
+PLAYER_IMG = os.path.join(SPR_PL_DIR, 'player_ship1_red.png')
+ENEMIES_IMG = [os.path.join(SPR_EN_DIR, img) for img in (
+    'enemy_black1.png', 'enemy_black2.png', 'enemy_black3.png',
+    'enemy_black4.png', 'enemy_black5.png', 'enemy_blue1.png',
+    'enemy_blue2.png', 'enemy_blue3.png', 'enemy_blue4.png',
+    'enemy_blue5.png', 'enemy_green1.png', 'enemy_green2.png',
+    'enemy_green3.png', 'enemy_green4.png', 'enemy_green5.png',
+    'enemy_red1.png', 'enemy_red2.png', 'enemy_red3.png',
+    'enemy_red4.png', 'enemy_red5.png'
+)]
 
 # Menu settings.
 MENU_FONT = os.path.join(FNT_DIR, 'kenvector_future.ttf')

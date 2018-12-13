@@ -60,7 +60,7 @@ class Game(object):
 
     def draw(self):
         """Put everything on screen."""
-        self.screen.fill(settings.BLACK)
+        self.fill_background(settings.BLACK_BG_IMG)
         self.sprites.draw(self.screen)
         pygame.display.flip()
 

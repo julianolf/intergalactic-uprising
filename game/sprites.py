@@ -15,8 +15,7 @@ class Player(pygame.sprite.Sprite):
         """
         super(Player, self).__init__(groups)
         self.game = game
-        self.image = pygame.Surface((50, 50))
-        self.image.fill(settings.BLUE)
+        self.image = pygame.image.load(settings.PLAYER_IMG)
         self.rect = self.image.get_rect()
         self.rect.centerx = settings.WIDTH / 2
         self.rect.bottom = settings.HEIGHT - 10
@@ -67,8 +66,7 @@ class Enemy(pygame.sprite.Sprite):
         """
         super(Enemy, self).__init__(groups)
         self.game = game
-        self.image = pygame.Surface((50, 50))
-        self.image.fill(settings.RED)
+        self.image = pygame.image.load(random.choice(settings.ENEMIES_IMG))
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(settings.WIDTH - self.rect.width)
         self.rect.y = random.randrange(-100, -40)
@@ -105,7 +103,7 @@ class Bullet(pygame.sprite.Sprite):
         super(Bullet, self).__init__(groups)
         self.game = game
         self.image = pygame.Surface((5, 5))
-        self.image.fill(settings.YELLOW)
+        self.image.fill(settings.WHITE)
         self.rect = self.image.get_rect()
         self.rect.centerx, self.rect.bottom = pos
         self.speedy = -10
