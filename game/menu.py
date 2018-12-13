@@ -25,16 +25,6 @@ class Menu(object):
         """Exit game."""
         self.running = False
 
-    def fill_background(self):
-        """Fill screen with a single image."""
-        width = self.game.screen.get_width()
-        height = self.game.screen.get_height()
-        background = pygame.image.load(settings.BLACK_BG_IMG)
-
-        for y in range(0, height, background.get_height()):
-            for x in range(0, width, background.get_width()):
-                self.game.screen.blit(background, (x, y))
-
     def draw(self):
         """Draws menu on screen."""
         self.menu = KezMenu(
@@ -60,6 +50,6 @@ class Menu(object):
                 pygame.event.get(),
                 self.clock.tick(settings.FPS) / 1000.
             )
-            self.fill_background()
+            self.game.fill_background(settings.BLACK_BG_IMG)
             self.menu.draw(self.game.screen)
             pygame.display.flip()

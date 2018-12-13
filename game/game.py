@@ -64,6 +64,14 @@ class Game(object):
         self.sprites.draw(self.screen)
         pygame.display.flip()
 
+    def fill_background(self, image):
+        """Fill screen with a single image."""
+        background = pygame.image.load(image)
+
+        for y in range(0, settings.HEIGHT, background.get_height()):
+            for x in range(0, settings.WIDTH, background.get_width()):
+                self.screen.blit(background, (x, y))
+
     def spawn_enemy(self):
         """Spawns a new enemy."""
         Enemy(self, groups=[self.sprites, self.enemies])
