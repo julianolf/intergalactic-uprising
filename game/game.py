@@ -16,6 +16,7 @@ class Game(object):
         )
         self.sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.bullets = pygame.sprite.Group()
         self.running = False
         self.clock = pygame.time.Clock()
         self.main_menu = Menu(self)
@@ -25,9 +26,10 @@ class Game(object):
         """Initializes a new game."""
         self.sprites.empty()
         self.enemies.empty()
+        self.bullets.empty()
         self.player = Player(self, groups=[self.sprites])
         for _ in range(8):
-            Enemy(self, groups=[self.sprites, self.enemies])
+            self.spawn_enemy()
         self.running = True
         self.run()
 
@@ -61,3 +63,7 @@ class Game(object):
         self.screen.fill(settings.BLACK)
         self.sprites.draw(self.screen)
         pygame.display.flip()
+
+    def spawn_enemy(self):
+        """Spawns a new enemy."""
+        Enemy(self, groups=[self.sprites, self.enemies])
