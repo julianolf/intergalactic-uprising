@@ -77,9 +77,12 @@ class Enemy(pygame.sprite.Sprite):
         """
         super(Enemy, self).__init__(groups)
         self.game = game
-        self.image = pygame.image.load(random.choice(settings.ENEMIES_IMG))
+        random_image = random.choice(settings.ENEMIES_IMG)
+        self.image = pygame.image.load(random_image)
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width * .9 / 2)
+        self.endurance = settings.ENEMIES_IMG.index(random_image) + 1
+        self.damage = 0
         self.spawn()
 
     def spawn(self):
@@ -129,14 +132,17 @@ class Bullet(pygame.sprite.Sprite):
         it's hit something or left the screen.
         """
         self.rect.y += self.speedy
-        # If the bullet has hit an enemy kill both,
-        # the enemy and the bullet. Also spawns a
-        # new enemy for each one killed.
-        if pygame.sprite.spritecollide(
-                self, self.game.enemies, True, pygame.sprite.collide_circle):
+        # If the bullet has hit an enemy it causes some damage.
+        for hit in pygame.sprite.spritecollide(
+                self, self.game.enemies, False, pygame.sprite.collide_circle):
             self.kill()
-            self.game.spawn_enemy()
-        # If the bullet has hit a meteor kill just the bullet.
+            hit.damage += 5
+            # If the enemy has died the player scores.
+            if hit.damage >= hit.endurance:
+                self.game.score += hit.endurance
+                hit.kill()
+                self.game.spawn_enemy()
+        # If the bullet has hit a meteor just kill the bullet.
         if pygame.sprite.spritecollide(
                 self, self.game.meteors, False, pygame.sprite.collide_circle):
             self.kill()

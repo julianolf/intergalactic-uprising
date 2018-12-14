@@ -49,8 +49,11 @@ METEORS_IMG = [os.path.join(SPR_MT_DIR, img) for img in (
     'meteorGrey_tiny1.png', 'meteorGrey_tiny2.png'
 )]
 
+# Font settings.
+FONT = os.path.join(FNT_DIR, 'kenvector_future.ttf')
+FONT_SIZE = 18
+
 # Menu settings.
-MENU_FONT = os.path.join(FNT_DIR, 'kenvector_future.ttf')
 MENU_FONT_SIZE = 32
 MENU_FONT_COLOR = (205, 205, 205)
 MENU_FONT_FOCUS_COLOR = (255, 255, 255)

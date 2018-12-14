@@ -34,6 +34,7 @@ class Game(object):
             self.spawn_enemy()
         for _ in range(4):
             self.spawn_meteor()
+        self.score = 0
         self.running = True
         self.run()
 
@@ -66,7 +67,21 @@ class Game(object):
         """Put everything on screen."""
         self.fill_background(settings.BLACK_BG_IMG)
         self.sprites.draw(self.screen)
+        self.draw_text(str(self.score), (settings.WIDTH / 2, 10))
         pygame.display.flip()
+
+    def draw_text(self, text, pos):
+        """Draws a text on screen.
+
+        Args:
+            text: The text string to be draw.
+            pos: The X and Y positions on screen.
+        """
+        font = pygame.font.Font(settings.FONT, settings.FONT_SIZE)
+        surface = font.render(text, True, settings.WHITE)
+        rect = surface.get_rect()
+        rect.midtop = pos
+        self.screen.blit(surface, rect)
 
     def fill_background(self, image):
         """Fill screen with a single image."""

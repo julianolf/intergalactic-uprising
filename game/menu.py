@@ -39,7 +39,7 @@ class Menu(object):
         self.menu.color = settings.MENU_FONT_COLOR
         self.menu.focus_color = settings.MENU_FONT_FOCUS_COLOR
         self.menu.font = pygame.font.Font(
-            settings.MENU_FONT,
+            settings.FONT,
             settings.MENU_FONT_SIZE
         )
         self.menu.enableEffect('raise-col-padding-on-focus', enlarge_time=0.1)
