@@ -69,7 +69,7 @@ class Game(object):
 
     def draw(self):
         """Put everything on screen."""
-        self.fill_background(settings.BLACK_BG_IMG)
+        self.fill_background(self.black_bg_img)
         self.sprites.draw(self.screen)
         self.draw_text(str(self.score), (settings.WIDTH / 2, 10))
         self.draw_bar((self.player.shield / 100), (15, 15))
@@ -106,11 +106,9 @@ class Game(object):
 
     def fill_background(self, image):
         """Fill screen with a single image."""
-        background = pygame.image.load(image)
-
-        for y in range(0, settings.HEIGHT, background.get_height()):
-            for x in range(0, settings.WIDTH, background.get_width()):
-                self.screen.blit(background, (x, y))
+        for y in range(0, settings.HEIGHT, image.get_height()):
+            for x in range(0, settings.WIDTH, image.get_width()):
+                self.screen.blit(image, (x, y))
 
     def spawn_enemy(self):
         """Spawns a new enemy."""
@@ -122,6 +120,10 @@ class Game(object):
 
     def load_resources(self):
         """Loads resource data like images and sfx."""
+        self.black_bg_img = pygame.image.load(settings.BLACK_BG_IMG)
+        self.player_img = pygame.image.load(settings.PLAYER_IMG)
+        self.enemies_img = [pygame.image.load(e) for e in settings.ENEMIES_IMG]
+        self.meteors_img = [pygame.image.load(m) for m in settings.METEORS_IMG]
         self.shoot_sfx = pygame.mixer.Sound(settings.SHOOT_SFX)
         self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
         self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)

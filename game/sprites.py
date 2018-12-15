@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
         """
         super(Player, self).__init__(groups)
         self.game = game
-        self.image = pygame.image.load(settings.PLAYER_IMG)
+        self.image = self.game.player_img
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width * .9 / 2)
         self.rect.centerx = settings.WIDTH / 2
@@ -86,11 +86,11 @@ class Enemy(pygame.sprite.Sprite):
         """
         super(Enemy, self).__init__(groups)
         self.game = game
-        random_image = random.choice(settings.ENEMIES_IMG)
-        self.image = pygame.image.load(random_image)
+        random_image = random.choice(self.game.enemies_img)
+        self.image = random_image
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width * .9 / 2)
-        self.endurance = settings.ENEMIES_IMG.index(random_image) + 1
+        self.endurance = self.game.enemies_img.index(random_image) + 1
         self.damage = 0
         self.spawn()
 
@@ -173,7 +173,7 @@ class Meteor(pygame.sprite.Sprite):
         """
         super(Meteor, self).__init__(groups)
         self.game = game
-        self._image = pygame.image.load(random.choice(settings.METEORS_IMG))
+        self._image = random.choice(self.game.meteors_img)
         self.image = self._image.copy()
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width * .9 / 2)

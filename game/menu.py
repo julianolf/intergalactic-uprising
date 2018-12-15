@@ -47,6 +47,6 @@ class Menu(object):
                 pygame.event.get(),
                 self.game.clock.tick(settings.FPS) / 1000.
             )
-            self.game.fill_background(settings.BLACK_BG_IMG)
+            self.game.fill_background(self.game.black_bg_img)
             self.menu.draw(self.game.screen)
             pygame.display.flip()
