@@ -21,6 +21,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = settings.WIDTH / 2
         self.rect.bottom = settings.HEIGHT - 10
         self.reload = 0
+        self.shield = 100
 
     def shoot(self):
         """Shoots a new bullet."""
@@ -39,9 +40,15 @@ class Player(pygame.sprite.Sprite):
         meteors_hits = pygame.sprite.spritecollide(
             self, self.game.meteors, False, pygame.sprite.collide_circle)
 
-        if enemies_hits or meteors_hits:
-            self.game.killed_sfx.play()
-            self.game.running = False
+        for hit in enemies_hits + meteors_hits:
+            self.shield -= hit.radius * 2
+            hit.spawn()  # For now let's just respawn whoever was hit.
+            if self.shield <= 0:
+                self.shield = 0
+                self.game.killed_sfx.play()
+                self.game.running = False
+            else:
+                self.game.hit_sfx.play()
 
     def update(self):
         """Update player sprite.

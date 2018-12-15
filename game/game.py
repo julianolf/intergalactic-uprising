@@ -72,6 +72,7 @@ class Game(object):
         self.fill_background(settings.BLACK_BG_IMG)
         self.sprites.draw(self.screen)
         self.draw_text(str(self.score), (settings.WIDTH / 2, 10))
+        self.draw_bar((self.player.shield / 100), (15, 15))
         pygame.display.flip()
 
     def draw_text(self, text, pos):
@@ -86,6 +87,22 @@ class Game(object):
         rect = surface.get_rect()
         rect.midtop = pos
         self.screen.blit(surface, rect)
+
+    def draw_bar(self, percent, pos, color=settings.GREEN):
+        """Draws a status bar on screen.
+
+        Args:
+            percent: The percentage of the bar to be filled.
+            pos: The X and Y positions on screen.
+            color: The color for the filled area of the bar.
+        """
+        x, y = pos
+        width, height = 100, 10
+        fill = percent * width
+        outline = pygame.Rect(x, y, width, height)
+        filled = pygame.Rect(x, y, fill, height)
+        pygame.draw.rect(self.screen, color, filled)
+        pygame.draw.rect(self.screen, settings.WHITE, outline, 2)
 
     def fill_background(self, image):
         """Fill screen with a single image."""
@@ -108,3 +125,4 @@ class Game(object):
         self.shoot_sfx = pygame.mixer.Sound(settings.SHOOT_SFX)
         self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
         self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)
+        self.hit_sfx = pygame.mixer.Sound(settings.HIT_SFX)

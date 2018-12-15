@@ -54,6 +54,7 @@ MAIN_THEME_SFX = os.path.join(SND_DIR, 'sfx_railJet.ogg')
 SHOOT_SFX = os.path.join(SND_DIR, 'sfx_laser2.ogg')
 KILLED_SFX = os.path.join(SND_DIR, 'sfx_explosion1.wav')
 EXPLOSION_SFX = os.path.join(SND_DIR, 'sfx_explosion2.wav')
+HIT_SFX = os.path.join(SND_DIR, 'sfx_hit.wav')
 
 # Font settings.
 FONT = os.path.join(FNT_DIR, 'kenvector_future.ttf')
