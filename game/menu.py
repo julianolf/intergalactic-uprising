@@ -13,20 +13,6 @@ class Menu(object):
             game: The running game instance.
         """
         self.game = game
-        self.running = False
-        self.clock = pygame.time.Clock()
-
-    def new_game(self):
-        """Starts a new game."""
-        self.running = False
-        self.game.new()
-
-    def exit(self):
-        """Exit game."""
-        self.running = False
-
-    def draw(self):
-        """Draws menu on screen."""
         self.menu = KezMenu(
             ['NEW GAME', self.new_game],
             ['EXIT', self.exit])
@@ -43,12 +29,23 @@ class Menu(object):
             settings.MENU_FONT_SIZE
         )
         self.menu.enableEffect('raise-col-padding-on-focus', enlarge_time=0.1)
+        self.running = False
 
+    def new_game(self):
+        """Starts a new game."""
+        self.game.new()
+
+    def exit(self):
+        """Exit game."""
+        self.running = False
+
+    def draw(self):
+        """Draws menu on screen."""
         self.running = True
         while self.running:
             self.menu.update(
                 pygame.event.get(),
-                self.clock.tick(settings.FPS) / 1000.
+                self.game.clock.tick(settings.FPS) / 1000.
             )
             self.game.fill_background(settings.BLACK_BG_IMG)
             self.menu.draw(self.game.screen)

@@ -25,11 +25,12 @@ class Player(pygame.sprite.Sprite):
     def shoot(self):
         """Shoots a new bullet."""
         now = pygame.time.get_ticks()
-        if now - self.reload > 300:
+        if now - self.reload > 400:
             self.reload = now
             pos = (self.rect.centerx, self.rect.top + 1)
             groups = [self.game.sprites, self.game.bullets]
             Bullet(self.game, pos, groups)
+            self.game.shoot_sfx.play()
 
     def hit(self):
         """Checks if the player has hit something."""
@@ -39,6 +40,7 @@ class Player(pygame.sprite.Sprite):
             self, self.game.meteors, False, pygame.sprite.collide_circle)
 
         if enemies_hits or meteors_hits:
+            self.game.killed_sfx.play()
             self.game.running = False
 
     def update(self):
@@ -141,6 +143,7 @@ class Bullet(pygame.sprite.Sprite):
             if hit.damage >= hit.endurance:
                 self.game.score += hit.endurance
                 hit.kill()
+                self.game.explosion_sfx.play()
                 self.game.spawn_enemy()
         # If the bullet has hit a meteor just kill the bullet.
         if pygame.sprite.spritecollide(

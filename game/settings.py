@@ -49,6 +49,12 @@ METEORS_IMG = [os.path.join(SPR_MT_DIR, img) for img in (
     'meteorGrey_tiny1.png', 'meteorGrey_tiny2.png'
 )]
 
+# SFX resources.
+MAIN_THEME_SFX = os.path.join(SND_DIR, 'sfx_railJet.ogg')
+SHOOT_SFX = os.path.join(SND_DIR, 'sfx_laser2.ogg')
+KILLED_SFX = os.path.join(SND_DIR, 'sfx_explosion1.wav')
+EXPLOSION_SFX = os.path.join(SND_DIR, 'sfx_explosion2.wav')
+
 # Font settings.
 FONT = os.path.join(FNT_DIR, 'kenvector_future.ttf')
 FONT_SIZE = 18

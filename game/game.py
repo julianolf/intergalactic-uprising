@@ -10,7 +10,9 @@ class Game(object):
     def __init__(self):
         """Creates a new Game."""
         pygame.init()
+        pygame.mixer.init()
         pygame.display.set_caption('Intergalactic Uprising')
+        self.load_resources()
         self.screen = pygame.display.set_mode(
             (settings.WIDTH, settings.HEIGHT)
         )
@@ -25,6 +27,7 @@ class Game(object):
 
     def new(self):
         """Initializes a new game."""
+        pygame.mixer.music.load(settings.MAIN_THEME_SFX)
         self.sprites.empty()
         self.enemies.empty()
         self.meteors.empty()
@@ -40,11 +43,13 @@ class Game(object):
 
     def run(self):
         """Game main loop."""
+        pygame.mixer.music.play(loops=-1)
         while self.running:
             self.clock.tick(settings.FPS)
             self.events()
             self.update()
             self.draw()
+        pygame.mixer.music.fadeout(500)
 
     def events(self):
         """Event handler.
@@ -57,7 +62,6 @@ class Game(object):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
-                    self.main_menu.draw()
 
     def update(self):
         """Update sprites."""
@@ -98,3 +102,9 @@ class Game(object):
     def spawn_meteor(self):
         """Spawns a new meteor."""
         Meteor(self, groups=[self.sprites, self.meteors])
+
+    def load_resources(self):
+        """Loads resource data like images and sfx."""
+        self.shoot_sfx = pygame.mixer.Sound(settings.SHOOT_SFX)
+        self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
+        self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)
