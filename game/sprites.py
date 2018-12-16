@@ -42,6 +42,12 @@ class Player(pygame.sprite.Sprite):
 
         for hit in enemies_hits + meteors_hits:
             self.shield -= hit.radius * 2
+            Explosion(
+                self.game,
+                hit.rect.center,
+                [self.game.explosions, self.game.sprites],
+                Explosion.XType.SMOKE
+            )
             hit.spawn()  # For now let's just respawn whoever was hit.
             if self.shield <= 0:
                 self.shield = 0
@@ -149,6 +155,11 @@ class Bullet(pygame.sprite.Sprite):
             # If the enemy has died the player scores.
             if hit.damage >= hit.endurance:
                 self.game.score += hit.endurance
+                Explosion(
+                    self.game,
+                    hit.rect.center,
+                    [self.game.explosions, self.game.sprites]
+                )
                 hit.kill()
                 self.game.explosion_sfx.play()
                 self.game.spawn_enemy()
@@ -213,3 +224,51 @@ class Meteor(pygame.sprite.Sprite):
                 or self.rect.right < -10
                 or self.rect.left > settings.WIDTH + 10):
             self.spawn()
+
+
+class Explosion(pygame.sprite.Sprite):
+    """Explosion animation.
+
+    Attributes:
+        XType: A sub-class defining explosion types.
+    """
+    class XType:
+        """Explosion types.
+
+        The values indicate the position of the
+        first image used to animate the explosion.
+        """
+        FIRE = 0
+        SMOKE = 5
+
+    def __init__(self, game, pos, groups=[], xtype=XType.FIRE):
+        """Initializes an explosion animation.
+
+        Args:
+            game: The running game instance.
+            pos: The X and Y positions on screen.
+            groups: A list of pygame.sprite.Group.
+            xtype: The explosion type. It can be  'fr' or 'sm'.
+        """
+        super(Explosion, self).__init__(groups)
+        self.game = game
+        self.xtype = xtype
+        self.frame = xtype
+        self.image = self.game.explosions_img[self.frame]
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.last_update = 0
+
+    def update(self):
+        """Animates the explosion till it self destroy."""
+        now = pygame.time.get_ticks()
+        if now - self.last_update > 100:
+            self.last_update = now
+            self.frame += 1
+            if self.frame < self.xtype + 5:
+                center = self.rect.center
+                self.image = self.game.explosions_img[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+            else:
+                self.kill()

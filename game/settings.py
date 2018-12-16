@@ -23,6 +23,7 @@ SPR_EN_DIR = os.path.join(SPR_DIR, 'enemy')
 SPR_MT_DIR = os.path.join(SPR_DIR, 'meteor')
 SPR_PL_DIR = os.path.join(SPR_DIR, 'player')
 SPR_UI_DIR = os.path.join(SPR_DIR, 'ui')
+SPR_FX_DIR = os.path.join(SPR_DIR, 'fx')
 
 # Image resources.
 BLACK_BG_IMG = os.path.join(SPR_BG_DIR, 'black.png')
@@ -47,6 +48,13 @@ METEORS_IMG = [os.path.join(SPR_MT_DIR, img) for img in (
     'meteorGrey_med1.png', 'meteorGrey_med2.png',
     'meteorGrey_small1.png', 'meteorGrey_small2.png',
     'meteorGrey_tiny1.png', 'meteorGrey_tiny2.png'
+)]
+EXPLOSIONS_IMG = [os.path.join(SPR_FX_DIR, img) for img in (
+    'explosion01.png', 'explosion02.png',
+    'explosion03.png', 'explosion04.png',
+    'explosion05.png', 'explosion06.png',
+    'explosion07.png', 'explosion08.png',
+    'explosion09.png', 'explosion10.png'
 )]
 
 # SFX resources.

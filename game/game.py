@@ -20,6 +20,7 @@ class Game(object):
         self.enemies = pygame.sprite.Group()
         self.meteors = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
+        self.explosions = pygame.sprite.Group()
         self.running = False
         self.clock = pygame.time.Clock()
         self.main_menu = Menu(self)
@@ -32,6 +33,7 @@ class Game(object):
         self.enemies.empty()
         self.meteors.empty()
         self.bullets.empty()
+        self.explosions.empty()
         self.player = Player(self, groups=[self.sprites])
         for _ in range(5):
             self.spawn_enemy()
@@ -124,6 +126,10 @@ class Game(object):
         self.player_img = pygame.image.load(settings.PLAYER_IMG)
         self.enemies_img = [pygame.image.load(e) for e in settings.ENEMIES_IMG]
         self.meteors_img = [pygame.image.load(m) for m in settings.METEORS_IMG]
+        self.explosions_img = [
+            pygame.image.load(e)
+            for e in settings.EXPLOSIONS_IMG
+        ]
         self.shoot_sfx = pygame.mixer.Sound(settings.SHOOT_SFX)
         self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
         self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)
