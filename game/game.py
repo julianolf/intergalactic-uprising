@@ -51,6 +51,7 @@ class Game(object):
             self.events()
             self.update()
             self.draw()
+            self.over()
         pygame.mixer.music.fadeout(500)
 
     def events(self):
@@ -74,7 +75,8 @@ class Game(object):
         self.fill_background(self.black_bg_img)
         self.sprites.draw(self.screen)
         self.draw_text(str(self.score), (settings.WIDTH / 2, 10))
-        self.draw_bar((self.player.shield / 100), (15, 15))
+        self.draw_bar((self.player.shield / 100), (75, 15))
+        self.draw_lives()
         pygame.display.flip()
 
     def draw_text(self, text, pos):
@@ -106,6 +108,16 @@ class Game(object):
         pygame.draw.rect(self.screen, color, filled)
         pygame.draw.rect(self.screen, settings.WHITE, outline, 2)
 
+    def draw_lives(self):
+        """Draws player's lives."""
+        icon_rect = self.player_ico_img.get_rect()
+        icon_rect.center = (25, 20)
+        lives = self.player.lives
+        if lives:
+            lives -= 1
+        self.screen.blit(self.player_ico_img, icon_rect)
+        self.draw_text(str(lives), (60, 10))
+
     def fill_background(self, image):
         """Fill screen with a single image."""
         for y in range(0, settings.HEIGHT, image.get_height()):
@@ -124,6 +136,7 @@ class Game(object):
         """Loads resource data like images and sfx."""
         self.black_bg_img = pygame.image.load(settings.BLACK_BG_IMG)
         self.player_img = pygame.image.load(settings.PLAYER_IMG)
+        self.player_ico_img = pygame.image.load(settings.PLAYER_ICO_IMG)
         self.enemies_img = [pygame.image.load(e) for e in settings.ENEMIES_IMG]
         self.meteors_img = [pygame.image.load(m) for m in settings.METEORS_IMG]
         self.explosions_img = [
@@ -134,3 +147,8 @@ class Game(object):
         self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
         self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)
         self.hit_sfx = pygame.mixer.Sound(settings.HIT_SFX)
+
+    def over(self):
+        """Checks if the game is over."""
+        if self.player.lives == 0 and not self.explosions.sprites():
+            self.running = False

@@ -22,11 +22,14 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = settings.HEIGHT - 10
         self.reload = 0
         self.shield = 100
+        self.lives = 3
+        self.hidden = False
+        self.hidden_since = 0
 
     def shoot(self):
         """Shoots a new bullet."""
         now = pygame.time.get_ticks()
-        if now - self.reload > 400:
+        if now - self.reload > 400 and not self.hidden:
             self.reload = now
             pos = (self.rect.centerx, self.rect.top + 1)
             groups = [self.game.sprites, self.game.bullets]
@@ -50,9 +53,15 @@ class Player(pygame.sprite.Sprite):
             )
             hit.spawn()  # For now let's just respawn whoever was hit.
             if self.shield <= 0:
-                self.shield = 0
+                self.lives -= 1
+                self.shield = 100
+                Explosion(
+                    self.game,
+                    self.rect.center,
+                    [self.game.explosions, self.game.sprites]
+                )
                 self.game.killed_sfx.play()
-                self.game.running = False
+                self.hide()
             else:
                 self.game.hit_sfx.play()
 
@@ -78,6 +87,17 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = settings.WIDTH
         if self.rect.left < 0:
             self.rect.left = 0
+
+        # Puts the player back in the game.
+        if self.hidden and pygame.time.get_ticks() - self.hidden_since > 1500:
+            self.hide()
+
+    def hide(self):
+        """(Un)Hide the player."""
+        self.hidden = not self.hidden
+        self.hidden_since = pygame.time.get_ticks()
+        self.rect.centerx = settings.WIDTH / 2
+        self.rect.bottom = settings.HEIGHT + (200 if self.hidden else -10)
 
 
 class Enemy(pygame.sprite.Sprite):

@@ -28,6 +28,7 @@ SPR_FX_DIR = os.path.join(SPR_DIR, 'fx')
 # Image resources.
 BLACK_BG_IMG = os.path.join(SPR_BG_DIR, 'black.png')
 PLAYER_IMG = os.path.join(SPR_PL_DIR, 'player_ship1_red.png')
+PLAYER_ICO_IMG = os.path.join(SPR_UI_DIR, 'player_life1_red.png')
 ENEMIES_IMG = [os.path.join(SPR_EN_DIR, img) for img in (
     'enemy_black1.png', 'enemy_black2.png', 'enemy_black3.png',
     'enemy_black4.png', 'enemy_black5.png', 'enemy_blue1.png',
