@@ -1,6 +1,7 @@
 import pygame
 import random
 from game import settings
+from enum import Enum
 
 
 class Player(pygame.sprite.Sprite):
@@ -22,6 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = settings.HEIGHT - 10
         self.reload = 0
         self.shield = 100
+        self.cannon = 1
         self.lives = 3
         self.hidden = False
         self.hidden_since = 0
@@ -29,11 +31,51 @@ class Player(pygame.sprite.Sprite):
     def shoot(self):
         """Shoots a new bullet."""
         now = pygame.time.get_ticks()
-        if now - self.reload > 400 and not self.hidden:
+        time_needed = 400 if self.cannon < 5 else 200
+        if now - self.reload > time_needed and not self.hidden:
             self.reload = now
-            pos = (self.rect.centerx, self.rect.top + 1)
-            groups = [self.game.sprites, self.game.bullets]
-            Bullet(self.game, pos, groups)
+            params = {
+                'game': self.game,
+                'speed': (0, -10),
+                'groups': [self.game.sprites, self.game.bullets]
+            }
+            bullets = []
+            if self.cannon == 1:
+                bullets = [
+                    {'pos': (self.rect.centerx, self.rect.top)}
+                ]
+            elif self.cannon == 2:
+                bullets = [
+                    {'pos': (self.rect.centerx - 5, self.rect.top)},
+                    {'pos': (self.rect.centerx + 5, self.rect.top)}
+                ]
+            elif self.cannon == 3:
+                bullets = [
+                    {'pos': (self.rect.centerx - 22, self.rect.top + 15)},
+                    {'pos': (self.rect.centerx + 22, self.rect.top + 15)}
+                ]
+            elif self.cannon == 4:
+                bullets = [
+                    {'pos': (self.rect.centerx, self.rect.top)},
+                    {
+                        'pos': (self.rect.centerx - 10, self.rect.top),
+                        'speed': (-1, -10)
+                    },
+                    {
+                        'pos': (self.rect.centerx + 10, self.rect.top),
+                        'speed': (1, -10)
+                    }
+                ]
+            else:
+                bullets = [
+                    {'pos': (self.rect.centerx - 15, self.rect.top + 15)},
+                    {'pos': (self.rect.centerx + 15, self.rect.top + 15)},
+                    {'pos': (self.rect.centerx - 25, self.rect.top + 15)},
+                    {'pos': (self.rect.centerx + 25, self.rect.top + 15)}
+                ]
+            for bullet in bullets:
+                bullet_params = {**params, **bullet}
+                Bullet(**bullet_params)
             self.game.shoot_sfx.play()
 
     def hit(self):
@@ -42,6 +84,8 @@ class Player(pygame.sprite.Sprite):
             self, self.game.enemies, False, pygame.sprite.collide_circle)
         meteors_hits = pygame.sprite.spritecollide(
             self, self.game.meteors, False, pygame.sprite.collide_circle)
+        pows_hits = pygame.sprite.spritecollide(
+                self, self.game.pows, True, pygame.sprite.collide_circle)
 
         for hit in enemies_hits + meteors_hits:
             self.shield -= hit.radius * 2
@@ -49,12 +93,13 @@ class Player(pygame.sprite.Sprite):
                 self.game,
                 hit.rect.center,
                 [self.game.explosions, self.game.sprites],
-                Explosion.XType.SMOKE
+                Explosion.Type.SMOKE
             )
             hit.spawn()  # For now let's just respawn whoever was hit.
             if self.shield <= 0:
                 self.lives -= 1
                 self.shield = 100
+                self.cannon = 1
                 Explosion(
                     self.game,
                     self.rect.center,
@@ -64,6 +109,17 @@ class Player(pygame.sprite.Sprite):
                 self.hide()
             else:
                 self.game.hit_sfx.play()
+
+        # Applys power up accordingly to its type.
+        for hit in pows_hits:
+            self.game.pows_sfx[hit.type.value].play()
+            if hit.type == Pow.Type.BLUE:
+                self.cannon += 1
+            elif hit.type == Pow.Type.GREEN:
+                self.shield += 10
+                self.shield = 100 if self.shield > 100 else self.shield
+            elif hit.type == Pow.Type.RED:
+                self.lives += 1
 
     def update(self):
         """Update player sprite.
@@ -130,7 +186,8 @@ class Enemy(pygame.sprite.Sprite):
     def update(self):
         """Update enemy sprite.
 
-        Perform animations like moving and shooting."""
+        Perform animations like moving and shooting.
+        """
         self.rect.x += self.speedx
         self.rect.y += self.speedy
         # If enemy left screen respawn it.
@@ -143,7 +200,7 @@ class Enemy(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     """A bullet."""
 
-    def __init__(self, game, pos=(0, 0), groups=[]):
+    def __init__(self, game, pos=(0, 0), groups=[], speed=(0, -10)):
         """Initializes a new bullet.
 
         Args:
@@ -158,7 +215,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width * .9 / 2)
         self.rect.centerx, self.rect.bottom = pos
-        self.speedy = -10
+        self.speedx, self.speedy = speed
 
     def update(self):
         """Update bullet sprite.
@@ -166,6 +223,7 @@ class Bullet(pygame.sprite.Sprite):
         Performs animation moving up and checks if
         it's hit something or left the screen.
         """
+        self.rect.x += self.speedx
         self.rect.y += self.speedy
         # If the bullet has hit an enemy it causes some damage.
         for hit in pygame.sprite.spritecollide(
@@ -180,6 +238,13 @@ class Bullet(pygame.sprite.Sprite):
                     hit.rect.center,
                     [self.game.explosions, self.game.sprites]
                 )
+                # There's a chance to get a power up by.
+                if random.random() > 0.9:
+                    Pow(
+                        self.game,
+                        hit.rect.center,
+                        [self.game.pows, self.game.sprites]
+                    )
                 hit.kill()
                 self.game.explosion_sfx.play()
                 self.game.spawn_enemy()
@@ -188,7 +253,9 @@ class Bullet(pygame.sprite.Sprite):
                 self, self.game.meteors, False, pygame.sprite.collide_circle):
             self.kill()
         # If the bullet has left the screen kill it.
-        if self.rect.bottom < 0:
+        if (self.rect.bottom < 0
+                or self.rect.right < 0
+                or self.rect.left > settings.WIDTH):
             self.kill()
 
 
@@ -235,7 +302,8 @@ class Meteor(pygame.sprite.Sprite):
     def update(self):
         """Update meteor sprite.
 
-        Perform animations like moving and rotating."""
+        Perform animations like moving and rotating.
+        """
         self.rect.x += self.speedx
         self.rect.y += self.speedy
         self.rotate()
@@ -250,9 +318,9 @@ class Explosion(pygame.sprite.Sprite):
     """Explosion animation.
 
     Attributes:
-        XType: A sub-class defining explosion types.
+        Type: A sub-class defining explosion types.
     """
-    class XType:
+    class Type(Enum):
         """Explosion types.
 
         The values indicate the position of the
@@ -261,19 +329,20 @@ class Explosion(pygame.sprite.Sprite):
         FIRE = 0
         SMOKE = 5
 
-    def __init__(self, game, pos, groups=[], xtype=XType.FIRE):
+    def __init__(self, game, pos, groups=[], xtype=None):
         """Initializes an explosion animation.
 
         Args:
             game: The running game instance.
             pos: The X and Y positions on screen.
             groups: A list of pygame.sprite.Group.
-            xtype: The explosion type. It can be  'fr' or 'sm'.
+            xtype: The explosion type.
         """
         super(Explosion, self).__init__(groups)
         self.game = game
-        self.xtype = xtype
-        self.frame = xtype
+        self.type = (xtype if type(xtype) == Explosion.Type
+                     else Explosion.Type(0))
+        self.frame = self.type.value
         self.image = self.game.explosions_img[self.frame]
         self.rect = self.image.get_rect()
         self.rect.center = pos
@@ -285,10 +354,50 @@ class Explosion(pygame.sprite.Sprite):
         if now - self.last_update > 100:
             self.last_update = now
             self.frame += 1
-            if self.frame < self.xtype + 5:
+            if self.frame < self.type.value + 5:
                 center = self.rect.center
                 self.image = self.game.explosions_img[self.frame]
                 self.rect = self.image.get_rect()
                 self.rect.center = center
             else:
                 self.kill()
+
+
+class Pow(pygame.sprite.Sprite):
+    """Power Up.
+
+    Attributes:
+        Type: A sub-class defining power up types.
+    """
+    class Type(Enum):
+        """Power up types.
+
+        Attributes:
+            Blue pill: Shooting upgrade.
+            Green pill: Shield restoring.
+            Red pill: Life up.
+        """
+        BLUE = 0
+        GREEN = 1
+        RED = 2
+
+    def __init__(self, game, pos, groups=[], ptype=None):
+        super(Pow, self).__init__(groups)
+        self.game = game
+        self.type = (ptype if type(ptype) == Pow.Type
+                     else Pow.Type(random.randrange(3)))
+        self.image = self.game.pows_img[self.type.value]
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.radius = int(self.rect.width * .9 / 2)
+        self.speedy = 2
+
+    def update(self):
+        """Update power up sprite.
+
+        Perform animation moving the power up down
+        till it leaves the screen.
+        """
+        self.rect.y += self.speedy
+        if self.rect.top > settings.HEIGHT:
+            self.kill()

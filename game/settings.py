@@ -22,6 +22,7 @@ SPR_BG_DIR = os.path.join(SPR_DIR, 'background')
 SPR_EN_DIR = os.path.join(SPR_DIR, 'enemy')
 SPR_MT_DIR = os.path.join(SPR_DIR, 'meteor')
 SPR_PL_DIR = os.path.join(SPR_DIR, 'player')
+SPR_PW_DIR = os.path.join(SPR_DIR, 'pow')
 SPR_UI_DIR = os.path.join(SPR_DIR, 'ui')
 SPR_FX_DIR = os.path.join(SPR_DIR, 'fx')
 
@@ -57,6 +58,10 @@ EXPLOSIONS_IMG = [os.path.join(SPR_FX_DIR, img) for img in (
     'explosion07.png', 'explosion08.png',
     'explosion09.png', 'explosion10.png'
 )]
+POWS_IMG = [os.path.join(SPR_PW_DIR, img) for img in (
+    'pill_blue.png', 'pill_green.png',
+    'pill_red.png', 'pill_yellow.png'
+)]
 
 # SFX resources.
 MAIN_THEME_SFX = os.path.join(SND_DIR, 'sfx_railJet.ogg')
@@ -64,6 +69,7 @@ SHOOT_SFX = os.path.join(SND_DIR, 'sfx_laser2.ogg')
 KILLED_SFX = os.path.join(SND_DIR, 'sfx_explosion1.wav')
 EXPLOSION_SFX = os.path.join(SND_DIR, 'sfx_explosion2.wav')
 HIT_SFX = os.path.join(SND_DIR, 'sfx_hit.wav')
+POWS_SFX = [os.path.join(SND_DIR, f'sfx_pow{i}.wav') for i in range(1, 4)]
 
 # Font settings.
 FONT = os.path.join(FNT_DIR, 'kenvector_future.ttf')

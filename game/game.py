@@ -21,6 +21,7 @@ class Game(object):
         self.meteors = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
+        self.pows = pygame.sprite.Group()
         self.running = False
         self.clock = pygame.time.Clock()
         self.main_menu = Menu(self)
@@ -34,6 +35,7 @@ class Game(object):
         self.meteors.empty()
         self.bullets.empty()
         self.explosions.empty()
+        self.pows.empty()
         self.player = Player(self, groups=[self.sprites])
         for _ in range(5):
             self.spawn_enemy()
@@ -143,10 +145,12 @@ class Game(object):
             pygame.image.load(e)
             for e in settings.EXPLOSIONS_IMG
         ]
+        self.pows_img = [pygame.image.load(p) for p in settings.POWS_IMG]
         self.shoot_sfx = pygame.mixer.Sound(settings.SHOOT_SFX)
         self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
         self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)
         self.hit_sfx = pygame.mixer.Sound(settings.HIT_SFX)
+        self.pows_sfx = [pygame.mixer.Sound(s) for s in settings.POWS_SFX]
 
     def over(self):
         """Checks if the game is over."""
