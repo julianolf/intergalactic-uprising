@@ -102,7 +102,7 @@ class Game(object):
         rect.midtop = pos
         self.screen.blit(surface, rect)
 
-    def draw_bar(self, percent, pos, color=settings.GREEN):
+    def draw_bar(self, percent, pos, color=None):
         """Draws a status bar on screen.
 
         Args:
@@ -113,6 +113,13 @@ class Game(object):
         x, y = pos
         width, height = 100, 10
         fill = percent * width
+        if not color:
+            if percent < .2:
+                color = settings.RED
+            elif percent < .5:
+                color = settings.YELLOW
+            else:
+                color = settings.GREEN
         outline = pygame.Rect(x, y, width, height)
         filled = pygame.Rect(x, y, fill, height)
         pygame.draw.rect(self.screen, color, filled)
