@@ -34,6 +34,7 @@ class Menu(object):
     def new_game(self):
         """Starts a new game."""
         self.game.new()
+        self.game.run()
 
     def exit(self):
         """Exit game."""

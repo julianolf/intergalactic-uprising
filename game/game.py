@@ -11,6 +11,7 @@ class Game(object):
         """Creates a new Game."""
         pygame.init()
         pygame.mixer.init()
+        pygame.mixer.music.load(settings.MAIN_THEME_SFX)
         pygame.display.set_caption('Intergalactic Uprising')
         self.load_resources()
         self.screen = pygame.display.set_mode(
@@ -29,7 +30,6 @@ class Game(object):
 
     def new(self):
         """Initializes a new game."""
-        pygame.mixer.music.load(settings.MAIN_THEME_SFX)
         self.sprites.empty()
         self.enemies.empty()
         self.meteors.empty()
@@ -43,7 +43,6 @@ class Game(object):
             self.spawn_meteor()
         self.score = 0
         self.running = True
-        self.run()
 
     def run(self):
         """Game main loop."""
@@ -67,6 +66,8 @@ class Game(object):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
+                if event.key == pygame.K_RETURN and not self.player.alive():
+                    self.new()
 
     def update(self):
         """Update sprites."""
@@ -79,16 +80,23 @@ class Game(object):
         self.draw_text(str(self.score), (settings.WIDTH / 2, 10))
         self.draw_bar((self.player.shield / 100), (75, 15))
         self.draw_lives()
+        if not self.player.alive():
+            # Show game over message.
+            centerx, centery = settings.WIDTH / 2, settings.HEIGHT / 2
+            self.draw_text('Game Over', (centerx, centery - 48), 42)
+            self.draw_text('[Return] play again.', (centerx, centery + 24))
+            self.draw_text('[Escape] main menu.', (centerx, centery + 48))
         pygame.display.flip()
 
-    def draw_text(self, text, pos):
+    def draw_text(self, text, pos, size=settings.FONT_SIZE):
         """Draws a text on screen.
 
         Args:
             text: The text string to be draw.
             pos: The X and Y positions on screen.
+            size: Text size.
         """
-        font = pygame.font.Font(settings.FONT, settings.FONT_SIZE)
+        font = pygame.font.Font(settings.FONT, size)
         surface = font.render(text, True, settings.WHITE)
         rect = surface.get_rect()
         rect.midtop = pos
@@ -155,4 +163,5 @@ class Game(object):
     def over(self):
         """Checks if the game is over."""
         if self.player.lives == 0 and not self.explosions.sprites():
-            self.running = False
+            # Kill the player after losing all lives.
+            self.player.kill()
