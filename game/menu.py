@@ -18,8 +18,8 @@ class Menu(object):
             ['EXIT', self.exit])
 
         pos = (
-            (settings.WIDTH / 2 - 100),
-            (settings.HEIGHT / 2 - 50)
+            (settings.WIDTH / 2 - 79),
+            (settings.HEIGHT / 2 + 79)
         )
         self.menu.position = pos
         self.menu.color = settings.MENU_FONT_COLOR
@@ -42,6 +42,17 @@ class Menu(object):
 
     def draw(self):
         """Draws menu on screen."""
+        centerx = settings.WIDTH / 2
+        title1 = {
+            'text': 'Intergalactic',
+            'pos': (centerx - 15, 140),
+            'size': settings.FONT_LG_SIZE
+        }
+        title2 = {
+            'text': 'Uprising',
+            'pos': (centerx + 108, 171),
+            'size': settings.FONT_LG_SIZE
+        }
         self.running = True
         while self.running:
             self.menu.update(
@@ -49,5 +60,7 @@ class Menu(object):
                 self.game.clock.tick(settings.FPS) / 1000.
             )
             self.game.fill_background(self.game.black_bg_img)
+            self.game.draw_text(**title1)
+            self.game.draw_text(**title2)
             self.menu.draw(self.game.screen)
             pygame.display.flip()

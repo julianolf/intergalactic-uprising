@@ -74,9 +74,10 @@ POWS_SFX = [os.path.join(SND_DIR, f'sfx_pow{i}.wav') for i in range(1, 4)]
 # Font settings.
 FONT = os.path.join(FNT_DIR, 'kenvector_future.ttf')
 FONT_SIZE = 18
+FONT_LG_SIZE = 42
 
 # Menu settings.
-MENU_FONT_SIZE = 32
+MENU_FONT_SIZE = 24
 MENU_FONT_COLOR = (205, 205, 205)
 MENU_FONT_FOCUS_COLOR = (255, 255, 255)
 

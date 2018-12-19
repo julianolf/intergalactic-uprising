@@ -83,21 +83,24 @@ class Game(object):
         if not self.player.alive():
             # Show game over message.
             centerx, centery = settings.WIDTH / 2, settings.HEIGHT / 2
-            self.draw_text('Game Over', (centerx, centery - 48), 42)
+            self.draw_text(
+                'Game Over', (centerx, centery - 48), settings.FONT_LG_SIZE)
             self.draw_text('[Return] play again.', (centerx, centery + 24))
             self.draw_text('[Escape] main menu.', (centerx, centery + 48))
         pygame.display.flip()
 
-    def draw_text(self, text, pos, size=settings.FONT_SIZE):
+    def draw_text(self, text, pos,
+                  size=settings.FONT_SIZE, color=settings.WHITE):
         """Draws a text on screen.
 
         Args:
             text: The text string to be draw.
             pos: The X and Y positions on screen.
             size: Text size.
+            color: Text color.
         """
         font = pygame.font.Font(settings.FONT, size)
-        surface = font.render(text, True, settings.WHITE)
+        surface = font.render(text, True, color)
         rect = surface.get_rect()
         rect.midtop = pos
         self.screen.blit(surface, rect)
