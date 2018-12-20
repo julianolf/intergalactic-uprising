@@ -82,4 +82,4 @@ MENU_FONT_COLOR = (205, 205, 205)
 MENU_FONT_FOCUS_COLOR = (255, 255, 255)
 
 # Player settings.
-SPEEDX = 5
+SPEED = 5

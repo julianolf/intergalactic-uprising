@@ -28,11 +28,41 @@ class Player(pygame.sprite.Sprite):
         self.hidden = False
         self.hidden_since = 0
 
+    def move(self):
+        """Moves player on X and Y axis."""
+        if self.hidden:
+            return
+
+        keys = pygame.key.get_pressed()
+        # Moves player left/right/up/down.
+        if keys[pygame.K_LEFT]:
+            self.rect.x -= settings.SPEED
+        if keys[pygame.K_RIGHT]:
+            self.rect.x += settings.SPEED
+        if keys[pygame.K_UP]:
+            self.rect.y -= settings.SPEED
+        if keys[pygame.K_DOWN]:
+            self.rect.y += settings.SPEED
+        # If player reaches the boundaries stop moving.
+        if self.rect.right > settings.WIDTH - 10:
+            self.rect.right = settings.WIDTH - 10
+        if self.rect.left < 10:
+            self.rect.left = 10
+        if self.rect.top < 30:
+            self.rect.top = 30
+        if self.rect.bottom > settings.HEIGHT - 10:
+            self.rect.bottom = settings.HEIGHT - 10
+
     def shoot(self):
         """Shoots a new bullet."""
+        if self.hidden:
+            return
+
+        keys = pygame.key.get_pressed()
         now = pygame.time.get_ticks()
         time_needed = 400 if self.cannon < 5 else 200
-        if now - self.reload > time_needed and not self.hidden:
+        elapsed_time = (now - self.reload > time_needed)
+        if keys[pygame.K_SPACE] and elapsed_time:
             self.reload = now
             params = {
                 'game': self.game,
@@ -80,6 +110,9 @@ class Player(pygame.sprite.Sprite):
 
     def hit(self):
         """Checks if the player has hit something."""
+        if self.hidden:
+            return
+
         enemies_hits = pygame.sprite.spritecollide(
             self, self.game.enemies, False, pygame.sprite.collide_circle)
         meteors_hits = pygame.sprite.spritecollide(
@@ -128,24 +161,11 @@ class Player(pygame.sprite.Sprite):
         all animations like moving and shooting.
         """
         self.hit()
-
-        keys = pygame.key.get_pressed()
-        # Shoot shoot shoot!
-        if keys[pygame.K_SPACE]:
-            self.shoot()
-        # Moves player left/right.
-        if keys[pygame.K_LEFT]:
-            self.rect.x -= settings.SPEEDX
-        if keys[pygame.K_RIGHT]:
-            self.rect.x += settings.SPEEDX
-        # If player reaches the x-boundaries stop moving.
-        if self.rect.right > settings.WIDTH:
-            self.rect.right = settings.WIDTH
-        if self.rect.left < 0:
-            self.rect.left = 0
+        self.shoot()
+        self.move()
 
         # Puts the player back in the game.
-        if self.hidden and pygame.time.get_ticks() - self.hidden_since > 1500:
+        if self.hidden and pygame.time.get_ticks() - self.hidden_since > 2000:
             self.hide()
 
     def hide(self):
