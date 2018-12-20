@@ -114,9 +114,9 @@ class Player(pygame.sprite.Sprite):
             return
 
         enemies_hits = pygame.sprite.spritecollide(
-            self, self.game.enemies, False, pygame.sprite.collide_circle)
+            self, self.game.enemies, True, pygame.sprite.collide_circle)
         meteors_hits = pygame.sprite.spritecollide(
-            self, self.game.meteors, False, pygame.sprite.collide_circle)
+            self, self.game.meteors, True, pygame.sprite.collide_circle)
         pows_hits = pygame.sprite.spritecollide(
                 self, self.game.pows, True, pygame.sprite.collide_circle)
 
@@ -128,7 +128,11 @@ class Player(pygame.sprite.Sprite):
                 [self.game.explosions, self.game.sprites],
                 Explosion.Type.SMOKE
             )
-            hit.spawn()  # For now let's just respawn whoever was hit.
+            hit_type = type(hit)
+            if hit_type == Enemy:
+                self.game.spawn_enemy()
+            elif hit_type == Meteor:
+                self.game.spawn_meteor()
             if self.shield <= 0:
                 self.lives -= 1
                 self.shield = 100
@@ -306,6 +310,7 @@ class Meteor(pygame.sprite.Sprite):
         self.rot = 0
         self.rot_speed = random.randrange(-8, 8)
         self.last_rotation = 0
+        self.last_collision = 0
 
     def rotate(self):
         """Rotates the meteor."""
@@ -319,11 +324,47 @@ class Meteor(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
             self.rect.center = center
 
+    def hit(self):
+        """Checks if the meteor has hit another meteor."""
+        for hit in pygame.sprite.spritecollide(
+                self, self.game.meteors, False, pygame.sprite.collide_circle):
+            # Ignore self collision.
+            if hit != self:
+                now = pygame.time.get_ticks()
+                # If the last collision occurred at least 3s ago
+                # and it did not hit the center of the meteor.
+                if ((self.last_collision == 0
+                    or now - self.last_collision > 2000)
+                        and not hit.rect.collidepoint(self.rect.center)):
+                    self.last_collision = now
+                    # If the meteor hit was way too small destroy it.
+                    if (self.radius > hit.radius
+                            and self.radius - hit.radius > 40):
+                        Explosion(
+                            self.game,
+                            hit.rect.center,
+                            [self.game.explosions, self.game.sprites],
+                            Explosion.Type.SMOKE
+                        )
+                        hit.kill()
+                        self.game.explosion_sfx.play()
+                        self.game.spawn_meteor()
+                    else:
+                        # Perform some changes in the meteor course.
+                        if self.rect.top > hit.rect.top:
+                            self.speedy += 1
+                        else:
+                            self.speedy = max(self.speedy - 1, 1)
+                        if self.speedx > 0 != hit.speedx > 0:
+                            self.speedx *= -1
+                        self.rot_speed *= -1
+
     def update(self):
         """Update meteor sprite.
 
         Perform animations like moving and rotating.
         """
+        self.hit()
         self.rect.x += self.speedx
         self.rect.y += self.speedy
         self.rotate()
@@ -331,7 +372,8 @@ class Meteor(pygame.sprite.Sprite):
         if (self.rect.top > settings.HEIGHT + 10
                 or self.rect.right < -10
                 or self.rect.left > settings.WIDTH + 10):
-            self.spawn()
+            self.game.spawn_meteor()
+            self.kill()
 
 
 class Explosion(pygame.sprite.Sprite):
