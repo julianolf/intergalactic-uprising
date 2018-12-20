@@ -166,6 +166,7 @@ class Game(object):
             for e in settings.EXPLOSIONS_IMG
         ]
         self.pows_img = [pygame.image.load(p) for p in settings.POWS_IMG]
+        self.laser_img = [pygame.image.load(l) for l in settings.LASER_IMG]
         self.shoot_sfx = pygame.mixer.Sound(settings.SHOOT_SFX)
         self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
         self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)

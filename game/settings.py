@@ -63,6 +63,10 @@ POWS_IMG = [os.path.join(SPR_PW_DIR, img) for img in (
     'pill_blue.png', 'pill_green.png',
     'pill_red.png', 'pill_yellow.png'
 )]
+LASER_IMG = [os.path.join(SPR_FX_DIR, img) for img in (
+    'laserRed01.png', 'laserRed02.png', 'laserRed03.png',
+    'laserRed04.png', 'laserRed05.png'
+)]
 
 # SFX resources.
 MAIN_THEME_SFX = os.path.join(SND_DIR, 'sfx_railJet.ogg')

@@ -234,19 +234,21 @@ class Bullet(pygame.sprite.Sprite):
         """
         super(Bullet, self).__init__(groups)
         self.game = game
-        self.image = pygame.Surface((5, 5))
-        self.image.fill(settings.WHITE)
+        self.frames = self.game.laser_img
+        self.image = self.frames[0]
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width * .9 / 2)
         self.rect.centerx, self.rect.bottom = pos
         self.speedx, self.speedy = speed
+        self.animating = False
+        self.repeat_animation = 1
+        self.last_update = 0
 
     def hit(self):
         """Checks if the bullet has hit something."""
         # If the bullet has hit an enemy it causes some damage.
         for hit in pygame.sprite.spritecollide(
                 self, self.game.enemies, False, pygame.sprite.collide_circle):
-            self.kill()
             hit.damage += 5
             # If the enemy has died the player scores.
             if hit.damage >= hit.endurance:
@@ -264,12 +266,41 @@ class Bullet(pygame.sprite.Sprite):
                         [self.game.pows, self.game.sprites]
                     )
                 hit.kill()
+                self.kill()
                 self.game.explosion_sfx.play()
                 self.game.spawn_enemy()
+            else:
+                self.speedy = hit.speedy
+                self.speedx = hit.speedx
+                self.animating = True
         # If the bullet has hit a meteor just kill the bullet.
-        if pygame.sprite.spritecollide(
+        for hit in pygame.sprite.spritecollide(
                 self, self.game.meteors, False, pygame.sprite.collide_circle):
-            self.kill()
+            self.speedy = hit.speedy
+            self.speedx = hit.speedx
+            self.animating = True
+
+    def animate(self):
+        """Perform laser animation when it hits something."""
+        if self.animating:
+            now = pygame.time.get_ticks()
+            if now - self.last_update > 10:
+                self.last_update = now
+                index = self.frames.index(self.image)
+                # After show the last frame.
+                if index == len(self.frames) - 1:
+                    # Repeat n times them kill the laser sprite.
+                    if self.repeat_animation:
+                        index = 0
+                        self.repeat_animation -= 1
+                    else:
+                        self.kill()
+                        return
+                # Show the next frame.
+                center = self.rect.center
+                self.image = self.frames[index + 1]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
 
     def update(self):
         """Update bullet sprite.
@@ -279,7 +310,9 @@ class Bullet(pygame.sprite.Sprite):
         """
         self.rect.x += self.speedx
         self.rect.y += self.speedy
-        self.hit()
+        if not self.animating:
+            self.hit()
+        self.animate()
         # If the bullet has left the screen kill it.
         if (self.rect.bottom < 0
                 or self.rect.right < 0
