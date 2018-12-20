@@ -12,8 +12,9 @@ class Game(object):
         pygame.init()
         pygame.mixer.init()
         pygame.mixer.music.load(settings.MAIN_THEME_SFX)
-        pygame.display.set_caption('Intergalactic Uprising')
         self.load_resources()
+        pygame.display.set_icon(self.icon_img)
+        pygame.display.set_caption('Intergalactic Uprising')
         self.screen = pygame.display.set_mode(
             (settings.WIDTH, settings.HEIGHT)
         )
@@ -154,6 +155,7 @@ class Game(object):
 
     def load_resources(self):
         """Loads resource data like images and sfx."""
+        self.icon_img = pygame.image.load(settings.ICON_IMG)
         self.black_bg_img = pygame.image.load(settings.BLACK_BG_IMG)
         self.player_img = pygame.image.load(settings.PLAYER_IMG)
         self.player_ico_img = pygame.image.load(settings.PLAYER_ICO_IMG)
