@@ -21,7 +21,7 @@ class Game(object):
         self.sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.meteors = pygame.sprite.Group()
-        self.bullets = pygame.sprite.Group()
+        self.shots = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
         self.pows = pygame.sprite.Group()
         self.running = False
@@ -34,7 +34,7 @@ class Game(object):
         self.sprites.empty()
         self.enemies.empty()
         self.meteors.empty()
-        self.bullets.empty()
+        self.shots.empty()
         self.explosions.empty()
         self.pows.empty()
         self.player = Player(self, groups=[self.sprites])
@@ -167,7 +167,7 @@ class Game(object):
         ]
         self.pows_img = [pygame.image.load(p) for p in settings.POWS_IMG]
         self.laser_img = [pygame.image.load(l) for l in settings.LASER_IMG]
-        self.shoot_sfx = pygame.mixer.Sound(settings.SHOOT_SFX)
+        self.shot_sfx = pygame.mixer.Sound(settings.SHOT_SFX)
         self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
         self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)
         self.hit_sfx = pygame.mixer.Sound(settings.HIT_SFX)

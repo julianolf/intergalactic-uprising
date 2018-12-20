@@ -54,7 +54,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = settings.HEIGHT - 10
 
     def shoot(self):
-        """Shoots a new bullet."""
+        """Shoots a new laser."""
         if self.hidden:
             return
 
@@ -67,25 +67,25 @@ class Player(pygame.sprite.Sprite):
             params = {
                 'game': self.game,
                 'speed': (0, -10),
-                'groups': [self.game.sprites, self.game.bullets]
+                'groups': [self.game.sprites, self.game.shots]
             }
-            bullets = []
+            shots = []
             if self.cannon == 1:
-                bullets = [
+                shots = [
                     {'pos': (self.rect.centerx, self.rect.top)}
                 ]
             elif self.cannon == 2:
-                bullets = [
+                shots = [
                     {'pos': (self.rect.centerx - 5, self.rect.top)},
                     {'pos': (self.rect.centerx + 5, self.rect.top)}
                 ]
             elif self.cannon == 3:
-                bullets = [
+                shots = [
                     {'pos': (self.rect.centerx - 22, self.rect.top + 15)},
                     {'pos': (self.rect.centerx + 22, self.rect.top + 15)}
                 ]
             elif self.cannon == 4:
-                bullets = [
+                shots = [
                     {'pos': (self.rect.centerx, self.rect.top)},
                     {
                         'pos': (self.rect.centerx - 10, self.rect.top),
@@ -97,16 +97,16 @@ class Player(pygame.sprite.Sprite):
                     }
                 ]
             else:
-                bullets = [
+                shots = [
                     {'pos': (self.rect.centerx - 15, self.rect.top + 15)},
                     {'pos': (self.rect.centerx + 15, self.rect.top + 15)},
                     {'pos': (self.rect.centerx - 25, self.rect.top + 15)},
                     {'pos': (self.rect.centerx + 25, self.rect.top + 15)}
                 ]
-            for bullet in bullets:
-                bullet_params = {**params, **bullet}
-                Bullet(**bullet_params)
-            self.game.shoot_sfx.play()
+            for shot in shots:
+                shot_params = {**params, **shot}
+                Laser(**shot_params)
+            self.game.shot_sfx.play()
 
     def hit(self):
         """Checks if the player has hit something."""
@@ -221,18 +221,18 @@ class Enemy(pygame.sprite.Sprite):
             self.spawn()
 
 
-class Bullet(pygame.sprite.Sprite):
-    """A bullet."""
+class Laser(pygame.sprite.Sprite):
+    """A Laser shot."""
 
     def __init__(self, game, pos=(0, 0), groups=[], speed=(0, -10)):
-        """Initializes a new bullet.
+        """Initializes a new laser shot.
 
         Args:
             game: The running game instance.
-            pos: The X and Y initial position for the bullet.
+            pos: The X and Y initial position for the shot.
             groups: A list of pygame.sprite.Group.
         """
-        super(Bullet, self).__init__(groups)
+        super(Laser, self).__init__(groups)
         self.game = game
         self.frames = self.game.laser_img
         self.image = self.frames[0]
@@ -245,8 +245,8 @@ class Bullet(pygame.sprite.Sprite):
         self.last_update = 0
 
     def hit(self):
-        """Checks if the bullet has hit something."""
-        # If the bullet has hit an enemy it causes some damage.
+        """Checks if the shot has hit something."""
+        # If the shot has hit an enemy it causes some damage.
         for hit in pygame.sprite.spritecollide(
                 self, self.game.enemies, False, pygame.sprite.collide_circle):
             hit.damage += 5
@@ -273,7 +273,7 @@ class Bullet(pygame.sprite.Sprite):
                 self.speedy = hit.speedy
                 self.speedx = hit.speedx
                 self.animating = True
-        # If the bullet has hit a meteor just kill the bullet.
+        # If the shot has hit a meteor just kill the laser.
         for hit in pygame.sprite.spritecollide(
                 self, self.game.meteors, False, pygame.sprite.collide_circle):
             self.speedy = hit.speedy
@@ -303,7 +303,7 @@ class Bullet(pygame.sprite.Sprite):
                 self.rect.center = center
 
     def update(self):
-        """Update bullet sprite.
+        """Update laser shot sprite.
 
         Performs animation moving up and checks if
         it's hit something or left the screen.
@@ -313,7 +313,7 @@ class Bullet(pygame.sprite.Sprite):
         if not self.animating:
             self.hit()
         self.animate()
-        # If the bullet has left the screen kill it.
+        # If the laser shot has left the screen kill it.
         if (self.rect.bottom < 0
                 or self.rect.right < 0
                 or self.rect.left > settings.WIDTH):

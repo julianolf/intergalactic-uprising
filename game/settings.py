@@ -70,7 +70,7 @@ LASER_IMG = [os.path.join(SPR_FX_DIR, img) for img in (
 
 # SFX resources.
 MAIN_THEME_SFX = os.path.join(SND_DIR, 'sfx_railJet.ogg')
-SHOOT_SFX = os.path.join(SND_DIR, 'sfx_laser2.ogg')
+SHOT_SFX = os.path.join(SND_DIR, 'sfx_laser2.ogg')
 KILLED_SFX = os.path.join(SND_DIR, 'sfx_explosion1.wav')
 EXPLOSION_SFX = os.path.join(SND_DIR, 'sfx_explosion2.wav')
 HIT_SFX = os.path.join(SND_DIR, 'sfx_hit.wav')
