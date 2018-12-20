@@ -164,9 +164,9 @@ class Player(pygame.sprite.Sprite):
         Checks if the player is alive and perform
         all animations like moving and shooting.
         """
+        self.move()
         self.hit()
         self.shoot()
-        self.move()
 
         # Puts the player back in the game.
         if self.hidden and pygame.time.get_ticks() - self.hidden_since > 2000:
@@ -241,14 +241,8 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.centerx, self.rect.bottom = pos
         self.speedx, self.speedy = speed
 
-    def update(self):
-        """Update bullet sprite.
-
-        Performs animation moving up and checks if
-        it's hit something or left the screen.
-        """
-        self.rect.x += self.speedx
-        self.rect.y += self.speedy
+    def hit(self):
+        """Checks if the bullet has hit something."""
         # If the bullet has hit an enemy it causes some damage.
         for hit in pygame.sprite.spritecollide(
                 self, self.game.enemies, False, pygame.sprite.collide_circle):
@@ -276,6 +270,16 @@ class Bullet(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(
                 self, self.game.meteors, False, pygame.sprite.collide_circle):
             self.kill()
+
+    def update(self):
+        """Update bullet sprite.
+
+        Performs animation moving up and checks if
+        it's hit something or left the screen.
+        """
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+        self.hit()
         # If the bullet has left the screen kill it.
         if (self.rect.bottom < 0
                 or self.rect.right < 0
@@ -364,10 +368,10 @@ class Meteor(pygame.sprite.Sprite):
 
         Perform animations like moving and rotating.
         """
-        self.hit()
         self.rect.x += self.speedx
         self.rect.y += self.speedy
         self.rotate()
+        self.hit()
         # If the meteor left screen respawn it.
         if (self.rect.top > settings.HEIGHT + 10
                 or self.rect.right < -10
