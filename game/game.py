@@ -1,7 +1,7 @@
 import pygame
 from game import settings
 from game import Menu
-from game import Player, Enemy, Meteor
+from game import Player, Enemy, BossOne, Meteor
 
 
 class Game(object):
@@ -19,7 +19,9 @@ class Game(object):
             (settings.WIDTH, settings.HEIGHT)
         )
         self.sprites = pygame.sprite.Group()
+        self.players = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.bosses = pygame.sprite.Group()
         self.meteors = pygame.sprite.Group()
         self.shots = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
@@ -32,16 +34,17 @@ class Game(object):
     def new(self):
         """Initializes a new game."""
         self.sprites.empty()
+        self.players.empty()
         self.enemies.empty()
+        self.bosses.empty()
         self.meteors.empty()
         self.shots.empty()
         self.explosions.empty()
         self.pows.empty()
-        self.player = Player(self, groups=[self.sprites])
-        for _ in range(5):
-            self.spawn_enemy()
-        for _ in range(4):
-            self.spawn_meteor()
+        self.mob_limit = 10
+        self.enemies_remaining = 100
+        self.player = Player(self, groups=[self.sprites, self.players])
+        self.release_mobs()
         self.score = 0
         self.running = True
 
@@ -147,11 +150,27 @@ class Game(object):
 
     def spawn_enemy(self):
         """Spawns a new enemy."""
-        Enemy(self, groups=[self.sprites, self.enemies])
+        if self.enemies_remaining:
+            self.enemies_remaining -= 1
+            Enemy(self, groups=[self.sprites, self.enemies])
+        elif not self.bosses.sprites():
+            BossOne(self, groups=[self.sprites, self.bosses])
 
     def spawn_meteor(self):
         """Spawns a new meteor."""
         Meteor(self, groups=[self.sprites, self.meteors])
+
+    def release_mobs(self):
+        """Release the mobs.
+
+        It will be 2/3 of enemies and 1/3 of meteors.
+        """
+        enemies = int(self.mob_limit * 2 / 3)
+        moteors = int(self.mob_limit / 3)
+        for _ in range(enemies):
+            self.spawn_enemy()
+        for _ in range(moteors):
+            self.spawn_meteor()
 
     def load_resources(self):
         """Loads resource data like images and sfx."""
@@ -160,6 +179,7 @@ class Game(object):
         self.player_img = pygame.image.load(settings.PLAYER_IMG)
         self.player_ico_img = pygame.image.load(settings.PLAYER_ICO_IMG)
         self.enemies_img = [pygame.image.load(e) for e in settings.ENEMIES_IMG]
+        self.bosses_img = [pygame.image.load(b) for b in settings.BOSSES_IMG]
         self.meteors_img = [pygame.image.load(m) for m in settings.METEORS_IMG]
         self.explosions_img = [
             pygame.image.load(e)

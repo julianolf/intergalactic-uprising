@@ -40,6 +40,7 @@ ENEMIES_IMG = [os.path.join(SPR_EN_DIR, img) for img in (
     'enemy_red1.png', 'enemy_red2.png', 'enemy_red3.png',
     'enemy_red4.png', 'enemy_red5.png'
 )]
+BOSSES_IMG = [os.path.join(SPR_EN_DIR, f'boss{i}.png') for i in range(1, 10)]
 METEORS_IMG = [os.path.join(SPR_MT_DIR, img) for img in (
     'meteorBrown_big1.png', 'meteorBrown_big2.png',
     'meteorBrown_big3.png', 'meteorBrown_big4.png',

@@ -221,6 +221,149 @@ class Enemy(pygame.sprite.Sprite):
             self.spawn()
 
 
+class Boss(pygame.sprite.Sprite):
+    """A bigger and tough enemy.
+
+    Attributes:
+        State: A subclass defining the sprite state.
+    """
+    class State(Enum):
+        """Sprite states.
+
+        Attributes:
+            ARRIVING: Tells the enemy is getting in position.
+            SEEKING: Tells the enemy is seeking the player.
+            ATTACKING: Tells the enemy is about to attack.
+        """
+        ARRIVING = 0
+        SEEKING = 1
+        ATTACKING = 2
+
+    def __init__(self, game, which=None, groups=[]):
+        """Initializes a new boss.
+
+        Args:
+            game: The running game instance.
+            which: The positional number of the boss in the game.
+            groups: A list of pygame.sprite.Group.
+        """
+        super(Boss, self).__init__(groups)
+        self.game = game
+        self.image = (
+            self.game.bosses_img[which] if which is not None
+            else random.choice(self.game.bosses_img)
+        )
+        self.rect = self.image.get_rect()
+        self.radius = int(self.rect.width * .9 / 2)
+        self.damage = 0
+        self.rect.midtop = (
+            settings.WIDTH / 2,
+            self.rect.height * -1
+        )
+        self.state = Boss.State.ARRIVING
+
+    def move(self):
+        """Must be overridden.
+
+        Updates boss position.
+        """
+        pass
+
+    def shoot(self):
+        """Must be overridden.
+
+        Shoots.
+        """
+        pass
+
+    def animate(self):
+        """Must be overridden.
+
+        Switches frames to animate.
+        """
+        pass
+
+    def update(self):
+        """Update boss sprite.
+
+        Perform animations like moving and shooting.
+        """
+        self.move()
+        self.shoot()
+        self.animate()
+
+
+class BossOne(Boss):
+    """Describes first boss moving pattern and attack."""
+    def __init__(self, game, groups=[]):
+        """Initializes the first boss.
+
+        Args:
+            game: The running game instance.
+            groups: A list of pygame.sprite.Group.
+        """
+        super(BossOne, self).__init__(game, 0, groups)
+        self.endurance = 300
+        self.speedx = 0
+        self.speedy = 0
+        self.reloading = False
+        self.reload_time = 0
+        self.shots = 10
+        self.last_shot = 0
+
+    def move(self):
+        """Updates boss position."""
+        if self.state == Boss.State.ARRIVING:
+            if self.rect.y < 100:
+                self.speedy = 2
+            else:
+                self.speedy = 0
+                self.gotox = self.game.player.rect.centerx
+                self.state = Boss.State.SEEKING
+        elif self.state == Boss.State.SEEKING:
+            if self.gotox not in range(
+                    self.rect.centerx - 2, self.rect.centerx + 3):
+                self.speedx = 2 if self.rect.centerx < self.gotox else -2
+            else:
+                self.speedx = 0
+                self.state = Boss.State.ATTACKING
+        elif self.state == Boss.State.ATTACKING:
+            self.gotox = self.game.player.rect.centerx
+
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+
+    def shoot(self):
+        """Shoots."""
+        if self.state == Boss.State.ATTACKING and not self.reloading:
+            if self.shots:
+                now = pygame.time.get_ticks()
+                if now - self.last_shot > 200:
+                    self.last_shot = now
+                    self.shots -= 1
+                    EnemyLaser(
+                        self.game,
+                        (self.rect.centerx - 32, self.rect.bottom + 30),
+                        [self.game.shots, self.game.sprites],
+                        (-2, 10)
+                    )
+                    EnemyLaser(
+                        self.game,
+                        (self.rect.centerx + 32, self.rect.bottom + 30),
+                        [self.game.shots, self.game.sprites],
+                        (2, 10)
+                    )
+            else:
+                self.reloading = True
+                self.reload_time = pygame.time.get_ticks()
+        elif self.reloading:
+            now = pygame.time.get_ticks()
+            if now - self.reload_time > 1000:
+                self.shots = 10
+                self.reloading = False
+                self.state = Boss.State.SEEKING
+
+
 class Laser(pygame.sprite.Sprite):
     """A Laser shot."""
 
@@ -231,6 +374,7 @@ class Laser(pygame.sprite.Sprite):
             game: The running game instance.
             pos: The X and Y initial position for the shot.
             groups: A list of pygame.sprite.Group.
+            speed: The speed of the laser shot on X and Y axis.
         """
         super(Laser, self).__init__(groups)
         self.game = game
@@ -247,8 +391,11 @@ class Laser(pygame.sprite.Sprite):
     def hit(self):
         """Checks if the shot has hit something."""
         # If the shot has hit an enemy it causes some damage.
-        for hit in pygame.sprite.spritecollide(
-                self, self.game.enemies, False, pygame.sprite.collide_circle):
+        enemies_hits = pygame.sprite.spritecollide(
+            self, self.game.enemies, False, pygame.sprite.collide_circle)
+        bosses_hits = pygame.sprite.spritecollide(
+            self, self.game.bosses, False, pygame.sprite.collide_circle)
+        for hit in enemies_hits + bosses_hits:
             hit.damage += 5
             # If the enemy has died the player scores.
             if hit.damage >= hit.endurance:
@@ -268,7 +415,11 @@ class Laser(pygame.sprite.Sprite):
                 hit.kill()
                 self.kill()
                 self.game.explosion_sfx.play()
-                self.game.spawn_enemy()
+                if isinstance(hit, Enemy):
+                    self.game.spawn_enemy()
+                elif isinstance(hit, Boss):
+                    self.game.enemies_remaining = 100
+                    self.game.release_mobs()
             else:
                 self.speedy = hit.speedy
                 self.speedx = hit.speedx
@@ -318,6 +469,41 @@ class Laser(pygame.sprite.Sprite):
                 or self.rect.right < 0
                 or self.rect.left > settings.WIDTH):
             self.kill()
+
+
+class EnemyLaser(Laser):
+    """Enemy laser shot."""
+
+    def hit(self):
+        """Checks if the shot has hit something."""
+        for hit in pygame.sprite.spritecollide(
+                self, self.game.players, False, pygame.sprite.collide_circle):
+            hit.shield -= 35
+            if hit.shield <= 0:
+                hit.lives -= 1
+                hit.shield = 100
+                hit.cannon = 1
+                Explosion(
+                    self.game,
+                    hit.rect.center,
+                    [self.game.explosions, self.game.sprites]
+                )
+                self.game.killed_sfx.play()
+                hit.hide()
+            else:
+                self.speedy = 0
+                self.speedx = 0
+                self.animating = True
+                self.game.hit_sfx.play()
+        # If the shot has hit an enemy or a meteor just kill the laser.
+        enemies_hits = pygame.sprite.spritecollide(
+            self, self.game.enemies, False, pygame.sprite.collide_circle)
+        meteors_hits = pygame.sprite.spritecollide(
+            self, self.game.meteors, False, pygame.sprite.collide_circle)
+        for hit in enemies_hits + meteors_hits:
+            self.speedy = hit.speedy
+            self.speedx = hit.speedx
+            self.animating = True
 
 
 class Meteor(pygame.sprite.Sprite):
