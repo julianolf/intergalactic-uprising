@@ -82,7 +82,7 @@ class Game(object):
         self.fill_background(self.black_bg_img)
         self.sprites.draw(self.screen)
         self.draw_text(str(self.score), (settings.WIDTH / 2, 10))
-        self.draw_bar((self.player.shield / 100), (75, 15))
+        self.draw_bar((self.player.energy / 100), (75, 15))
         self.draw_lives()
         if not self.player.alive():
             # Show game over message.

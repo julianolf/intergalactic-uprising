@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = settings.WIDTH / 2
         self.rect.bottom = settings.HEIGHT - 10
         self.reload = 0
-        self.shield = 100
+        self.energy = 100
         self.cannon = 1
         self.lives = 3
         self.hidden = False
@@ -121,7 +121,7 @@ class Player(pygame.sprite.Sprite):
                 self, self.game.pows, True, pygame.sprite.collide_circle)
 
         for hit in enemies_hits + meteors_hits:
-            self.shield -= hit.radius * 2
+            self.energy -= hit.radius * 2
             Explosion(
                 self.game,
                 hit.rect.center,
@@ -133,9 +133,9 @@ class Player(pygame.sprite.Sprite):
                 self.game.spawn_enemy()
             elif hit_type == Meteor:
                 self.game.spawn_meteor()
-            if self.shield <= 0:
+            if self.energy <= 0:
                 self.lives -= 1
-                self.shield = 100
+                self.energy = 100
                 self.cannon = 1
                 Explosion(
                     self.game,
@@ -153,8 +153,8 @@ class Player(pygame.sprite.Sprite):
             if hit.type == Pow.Type.BLUE:
                 self.cannon += 1
             elif hit.type == Pow.Type.GREEN:
-                self.shield += 10
-                self.shield = 100 if self.shield > 100 else self.shield
+                self.energy += 10
+                self.energy = 100 if self.energy > 100 else self.energy
             elif hit.type == Pow.Type.RED:
                 self.lives += 1
 
@@ -207,13 +207,18 @@ class Enemy(pygame.sprite.Sprite):
         self.speedx = random.randrange(-3, 3)
         self.speedy = random.randrange(1, 8)
 
+    def move(self):
+        """Updates enemy position."""
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+
     def update(self):
         """Update enemy sprite.
 
         Perform animations like moving and shooting.
         """
-        self.rect.x += self.speedx
-        self.rect.y += self.speedy
+        self.move()
+
         # If enemy left screen respawn it.
         if (self.rect.top > settings.HEIGHT + 10
                 or self.rect.right < -10
@@ -453,17 +458,22 @@ class Laser(pygame.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.center = center
 
+    def move(self):
+        """Updates laser shot position."""
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+
     def update(self):
         """Update laser shot sprite.
 
         Performs animation moving up and checks if
         it's hit something or left the screen.
         """
-        self.rect.x += self.speedx
-        self.rect.y += self.speedy
+        self.move()
         if not self.animating:
             self.hit()
         self.animate()
+
         # If the laser shot has left the screen kill it.
         if (self.rect.bottom < 0
                 or self.rect.right < 0
@@ -478,10 +488,10 @@ class EnemyLaser(Laser):
         """Checks if the shot has hit something."""
         for hit in pygame.sprite.spritecollide(
                 self, self.game.players, False, pygame.sprite.collide_circle):
-            hit.shield -= 35
-            if hit.shield <= 0:
+            hit.energy -= 35
+            if hit.energy <= 0:
                 hit.lives -= 1
-                hit.shield = 100
+                hit.energy = 100
                 hit.cannon = 1
                 Explosion(
                     self.game,
@@ -582,15 +592,20 @@ class Meteor(pygame.sprite.Sprite):
                             self.speedx *= -1
                         self.rot_speed *= -1
 
+    def move(self):
+        """Updates the meteor position."""
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+
     def update(self):
         """Update meteor sprite.
 
         Perform animations like moving and rotating.
         """
-        self.rect.x += self.speedx
-        self.rect.y += self.speedy
+        self.move()
         self.rotate()
         self.hit()
+
         # If the meteor left screen respawn it.
         if (self.rect.top > settings.HEIGHT + 10
                 or self.rect.right < -10
