@@ -24,8 +24,10 @@ class Game(object):
         self.bosses = pygame.sprite.Group()
         self.meteors = pygame.sprite.Group()
         self.shots = pygame.sprite.Group()
+        self.enemies_shots = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
         self.pows = pygame.sprite.Group()
+        self.shields = pygame.sprite.Group()
         self.running = False
         self.clock = pygame.time.Clock()
         self.main_menu = Menu(self)
@@ -39,8 +41,10 @@ class Game(object):
         self.bosses.empty()
         self.meteors.empty()
         self.shots.empty()
+        self.enemies_shots.empty()
         self.explosions.empty()
         self.pows.empty()
+        self.shields.empty()
         self.mob_limit = 10
         self.enemies_remaining = 100
         self.player = Player(self, groups=[self.sprites, self.players])
@@ -187,6 +191,7 @@ class Game(object):
         ]
         self.pows_img = [pygame.image.load(p) for p in settings.POWS_IMG]
         self.laser_img = [pygame.image.load(l) for l in settings.LASER_IMG]
+        self.shield_img = [pygame.image.load(s) for s in settings.SHIELD_IMG]
         self.shot_sfx = pygame.mixer.Sound(settings.SHOT_SFX)
         self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
         self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)

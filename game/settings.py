@@ -68,6 +68,7 @@ LASER_IMG = [os.path.join(SPR_FX_DIR, img) for img in (
     'laserRed01.png', 'laserRed02.png', 'laserRed03.png',
     'laserRed04.png', 'laserRed05.png'
 )]
+SHIELD_IMG = [os.path.join(SPR_FX_DIR, f'shield{i}.png') for i in range(1, 3)]
 
 # SFX resources.
 MAIN_THEME_SFX = os.path.join(SND_DIR, 'sfx_railJet.ogg')
@@ -75,7 +76,7 @@ SHOT_SFX = os.path.join(SND_DIR, 'sfx_laser2.ogg')
 KILLED_SFX = os.path.join(SND_DIR, 'sfx_explosion1.wav')
 EXPLOSION_SFX = os.path.join(SND_DIR, 'sfx_explosion2.wav')
 HIT_SFX = os.path.join(SND_DIR, 'sfx_hit.wav')
-POWS_SFX = [os.path.join(SND_DIR, f'sfx_pow{i}.wav') for i in range(1, 4)]
+POWS_SFX = [os.path.join(SND_DIR, f'sfx_pow{i}.wav') for i in range(1, 5)]
 
 # Font settings.
 FONT = os.path.join(FNT_DIR, 'kenvector_future.ttf')

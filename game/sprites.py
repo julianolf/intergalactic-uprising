@@ -25,6 +25,7 @@ class Player(pygame.sprite.Sprite):
         self.energy = 100
         self.cannon = 1
         self.lives = 3
+        self.shield = False
         self.hidden = False
         self.hidden_since = 0
 
@@ -157,6 +158,14 @@ class Player(pygame.sprite.Sprite):
                 self.energy = 100 if self.energy > 100 else self.energy
             elif hit.type == Pow.Type.RED:
                 self.lives += 1
+            elif hit.type == Pow.Type.YELLOW:
+                if not self.shield:
+                    self.shield = True
+                    Shield(
+                        self.game,
+                        self,
+                        [self.game.shields, self.game.sprites]
+                    )
 
     def update(self):
         """Update player sprite.
@@ -212,12 +221,27 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 
+    def hit(self):
+        """Checks if the enemy has hit something."""
+        if pygame.sprite.spritecollide(
+                self, self.game.shields, False, pygame.sprite.collide_circle):
+            Explosion(
+                self.game,
+                self.rect.center,
+                [self.game.explosions, self.game.sprites],
+                Explosion.Type.SMOKE
+            )
+            self.kill()
+            self.game.explosion_sfx.play()
+            self.game.spawn_enemy()
+
     def update(self):
         """Update enemy sprite.
 
         Perform animations like moving and shooting.
         """
         self.move()
+        self.hit()
 
         # If enemy left screen respawn it.
         if (self.rect.top > settings.HEIGHT + 10
@@ -349,13 +373,13 @@ class BossOne(Boss):
                     EnemyLaser(
                         self.game,
                         (self.rect.centerx - 32, self.rect.bottom + 30),
-                        [self.game.shots, self.game.sprites],
+                        [self.game.enemies_shots, self.game.sprites],
                         (-2, 10)
                     )
                     EnemyLaser(
                         self.game,
                         (self.rect.centerx + 32, self.rect.bottom + 30),
-                        [self.game.shots, self.game.sprites],
+                        [self.game.enemies_shots, self.game.sprites],
                         (2, 10)
                     )
             else:
@@ -505,7 +529,8 @@ class EnemyLaser(Laser):
                 self.speedx = 0
                 self.animating = True
                 self.game.hit_sfx.play()
-        # If the shot has hit an enemy or a meteor just kill the laser.
+        # If the shot has hit an enemy, a meteor or a shield
+        # just kill the laser.
         enemies_hits = pygame.sprite.spritecollide(
             self, self.game.enemies, False, pygame.sprite.collide_circle)
         meteors_hits = pygame.sprite.spritecollide(
@@ -513,6 +538,11 @@ class EnemyLaser(Laser):
         for hit in enemies_hits + meteors_hits:
             self.speedy = hit.speedy
             self.speedx = hit.speedx
+            self.animating = True
+        if pygame.sprite.spritecollide(
+                self, self.game.shields, False, pygame.sprite.collide_circle):
+            self.speedy = 0
+            self.speedx = 0
             self.animating = True
 
 
@@ -591,6 +621,18 @@ class Meteor(pygame.sprite.Sprite):
                         if self.speedx > 0 != hit.speedx > 0:
                             self.speedx *= -1
                         self.rot_speed *= -1
+        # If it hits a shield it has to be destroyed.
+        if pygame.sprite.spritecollide(
+                self, self.game.shields, False, pygame.sprite.collide_circle):
+            Explosion(
+                self.game,
+                self.rect.center,
+                [self.game.explosions, self.game.sprites],
+                Explosion.Type.SMOKE
+            )
+            self.kill()
+            self.game.explosion_sfx.play()
+            self.game.spawn_meteor()
 
     def move(self):
         """Updates the meteor position."""
@@ -674,18 +716,28 @@ class Pow(pygame.sprite.Sprite):
 
         Attributes:
             Blue pill: Shooting upgrade.
-            Green pill: Shield restoring.
+            Green pill: Energy restoring.
             Red pill: Life up.
+            Yellow pill: Shield up.
         """
         BLUE = 0
         GREEN = 1
         RED = 2
+        YELLOW = 3
 
     def __init__(self, game, pos, groups=[], ptype=None):
+        """Initializes a power up.
+
+        Args:
+            game: The running game instance.
+            pos: The X and Y positions on screen.
+            groups: A list of pygame.sprite.Group.
+            ptype: The power up type.
+        """
         super(Pow, self).__init__(groups)
         self.game = game
         self.type = (ptype if type(ptype) == Pow.Type
-                     else Pow.Type(random.randrange(3)))
+                     else Pow.Type(random.randrange(4)))
         self.image = self.game.pows_img[self.type.value]
         self.rect = self.image.get_rect()
         self.rect.center = pos
@@ -701,3 +753,61 @@ class Pow(pygame.sprite.Sprite):
         self.rect.y += self.speedy
         if self.rect.top > settings.HEIGHT:
             self.kill()
+
+
+class Shield(pygame.sprite.Sprite):
+    """Spaceship Shield."""
+
+    def __init__(self, game, player, groups=[]):
+        """Initializes a spaceship shield.
+
+        Args:
+            game: The running game instance.
+            player: The player raising the shield.
+            groups: A list of pygame.sprite.Group.
+        """
+        super(Shield, self).__init__(groups)
+        self.game = game
+        self.player = player
+        self.frame = 1
+        self.image = self.game.shield_img[self.frame]
+        self.rect = self.image.get_rect()
+        self.rect.center = self.player.rect.center
+        self.radius = int(self.rect.width / 2)
+        self.fps = 3000
+        self.ttl = 6000
+        self.last_update = pygame.time.get_ticks()
+
+    def move(self):
+        """Updates the shield position."""
+        self.rect.center = self.player.rect.center
+
+    def animate(self):
+        """Animates the shield.
+
+        It switches from a high to a low shield,
+        after that it destroys itself.
+        """
+        now = pygame.time.get_ticks()
+        diff = now - self.last_update
+        if self.ttl <= 0:
+            self.player.shield = False
+            self.kill()
+        elif diff > self.fps:
+            self.ttl -= diff
+            self.last_update = now
+            self.frame -= 1
+            center = self.rect.center
+            self.image = self.game.shield_img[self.frame]
+            self.rect = self.image.get_rect()
+            self.rect.center = center
+            self.radius = int(self.rect.width / 2)
+
+    def update(self):
+        """Update shield sprite.
+
+        Moves the shield in order to follow the player's spaceship
+        animating the sprite till the shield time is over.
+        """
+        self.move()
+        self.animate()
