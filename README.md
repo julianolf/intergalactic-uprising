@@ -42,3 +42,9 @@ $ pipenv run python -m game.main
 TIP:
 
 If you have [Make](https://www.gnu.org/software/make/#content) installed you can just run `$ make` instead of `$ pipenv run ...` command.
+
+## Notes
+
+### macOS
+
+There's a known [issue](https://github.com/pygame/pygame/issues/555) with Pygame in macOS Mojave. I've tested a few workarounds explained on Github's thread but the only one that worked perfectly for me with no side effects was installing Python 3.7.0 from Miniconda.
