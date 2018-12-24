@@ -107,7 +107,6 @@ class Player(pygame.sprite.Sprite):
             for shot in shots:
                 shot_params = {**params, **shot}
                 Laser(**shot_params)
-            self.game.shot_sfx.play()
 
     def hit(self):
         """Checks if the player has hit something."""
@@ -123,28 +122,9 @@ class Player(pygame.sprite.Sprite):
 
         for hit in enemies_hits + meteors_hits:
             self.energy -= hit.radius * 2
-            Explosion(
-                self.game,
-                hit.rect.center,
-                [self.game.explosions, self.game.sprites],
-                Explosion.Type.SMOKE
-            )
-            hit_type = type(hit)
-            if hit_type == Enemy:
-                self.game.spawn_enemy()
-            elif hit_type == Meteor:
-                self.game.spawn_meteor()
+            hit.destroy()
             if self.energy <= 0:
-                self.lives -= 1
-                self.energy = 100
-                self.cannon = 1
-                Explosion(
-                    self.game,
-                    self.rect.center,
-                    [self.game.explosions, self.game.sprites]
-                )
-                self.game.killed_sfx.play()
-                self.hide()
+                self.die()
             else:
                 self.game.hit_sfx.play()
 
@@ -188,6 +168,20 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = settings.WIDTH / 2
         self.rect.bottom = settings.HEIGHT + (200 if self.hidden else -10)
 
+    def die(self):
+        """Perform animation, play sounds, loses a life
+        and regenerate the players energy."""
+        Explosion(
+            self.game,
+            self.rect.center,
+            [self.game.explosions, self.game.sprites]
+        )
+        self.hide()
+        self.game.killed_sfx.play()
+        self.lives -= 1
+        self.energy = 100
+        self.cannon = 1
+
 
 class Enemy(pygame.sprite.Sprite):
     """Enemies spaceship."""
@@ -225,15 +219,7 @@ class Enemy(pygame.sprite.Sprite):
         """Checks if the enemy has hit something."""
         if pygame.sprite.spritecollide(
                 self, self.game.shields, False, pygame.sprite.collide_circle):
-            Explosion(
-                self.game,
-                self.rect.center,
-                [self.game.explosions, self.game.sprites],
-                Explosion.Type.SMOKE
-            )
-            self.kill()
-            self.game.explosion_sfx.play()
-            self.game.spawn_enemy()
+            self.destroy()
 
     def update(self):
         """Update enemy sprite.
@@ -248,6 +234,22 @@ class Enemy(pygame.sprite.Sprite):
                 or self.rect.right < -10
                 or self.rect.left > settings.WIDTH + 10):
             self.spawn()
+
+    def destroy(self):
+        """Destroys enemy and spawn a new one."""
+        if random.random() > 0.9:
+            Pow(
+                self.game,
+                self.rect.center,
+                [self.game.pows, self.game.sprites]
+            )
+        Explosion(
+            self.game,
+            self.rect.center,
+            [self.game.explosions, self.game.sprites]
+        )
+        self.kill()
+        self.game.spawn_enemy()
 
 
 class Boss(pygame.sprite.Sprite):
@@ -320,6 +322,17 @@ class Boss(pygame.sprite.Sprite):
         self.move()
         self.shoot()
         self.animate()
+
+    def destroy(self):
+        """Destroys the boss and start the next level."""
+        Explosion(
+            self.game,
+            self.rect.center,
+            [self.game.explosions, self.game.sprites]
+        )
+        self.kill()
+        self.game.enemies_remaining = 100
+        self.game.release_mobs()
 
 
 class BossOne(Boss):
@@ -416,6 +429,7 @@ class Laser(pygame.sprite.Sprite):
         self.animating = False
         self.repeat_animation = 1
         self.last_update = 0
+        self.game.shot_sfx.play()
 
     def hit(self):
         """Checks if the shot has hit something."""
@@ -429,26 +443,8 @@ class Laser(pygame.sprite.Sprite):
             # If the enemy has died the player scores.
             if hit.damage >= hit.endurance:
                 self.game.score += hit.endurance
-                Explosion(
-                    self.game,
-                    hit.rect.center,
-                    [self.game.explosions, self.game.sprites]
-                )
-                # There's a chance to get a power up by.
-                if random.random() > 0.9:
-                    Pow(
-                        self.game,
-                        hit.rect.center,
-                        [self.game.pows, self.game.sprites]
-                    )
-                hit.kill()
+                hit.destroy()
                 self.kill()
-                self.game.explosion_sfx.play()
-                if isinstance(hit, Enemy):
-                    self.game.spawn_enemy()
-                elif isinstance(hit, Boss):
-                    self.game.enemies_remaining = 100
-                    self.game.release_mobs()
             else:
                 self.speedy = hit.speedy
                 self.speedx = hit.speedx
@@ -514,16 +510,7 @@ class EnemyLaser(Laser):
                 self, self.game.players, False, pygame.sprite.collide_circle):
             hit.energy -= 35
             if hit.energy <= 0:
-                hit.lives -= 1
-                hit.energy = 100
-                hit.cannon = 1
-                Explosion(
-                    self.game,
-                    hit.rect.center,
-                    [self.game.explosions, self.game.sprites]
-                )
-                self.game.killed_sfx.play()
-                hit.hide()
+                hit.die()
             else:
                 self.speedy = 0
                 self.speedx = 0
@@ -603,15 +590,7 @@ class Meteor(pygame.sprite.Sprite):
                     # If the meteor hit was way too small destroy it.
                     if (self.radius > hit.radius
                             and self.radius - hit.radius > 40):
-                        Explosion(
-                            self.game,
-                            hit.rect.center,
-                            [self.game.explosions, self.game.sprites],
-                            Explosion.Type.SMOKE
-                        )
-                        hit.kill()
-                        self.game.explosion_sfx.play()
-                        self.game.spawn_meteor()
+                        self.destroy()
                     else:
                         # Perform some changes in the meteor course.
                         if self.rect.top > hit.rect.top:
@@ -624,15 +603,7 @@ class Meteor(pygame.sprite.Sprite):
         # If it hits a shield it has to be destroyed.
         if pygame.sprite.spritecollide(
                 self, self.game.shields, False, pygame.sprite.collide_circle):
-            Explosion(
-                self.game,
-                self.rect.center,
-                [self.game.explosions, self.game.sprites],
-                Explosion.Type.SMOKE
-            )
-            self.kill()
-            self.game.explosion_sfx.play()
-            self.game.spawn_meteor()
+            self.destroy()
 
     def move(self):
         """Updates the meteor position."""
@@ -654,6 +625,17 @@ class Meteor(pygame.sprite.Sprite):
                 or self.rect.left > settings.WIDTH + 10):
             self.game.spawn_meteor()
             self.kill()
+
+    def destroy(self):
+        """Destroys the meteor and spawn a new one."""
+        Explosion(
+            self.game,
+            self.rect.center,
+            [self.game.explosions, self.game.sprites],
+            Explosion.Type.SMOKE
+        )
+        self.kill()
+        self.game.spawn_meteor()
 
 
 class Explosion(pygame.sprite.Sprite):
@@ -689,6 +671,7 @@ class Explosion(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.last_update = 0
+        self.game.explosion_sfx.play()
 
     def update(self):
         """Animates the explosion till it self destroy."""
