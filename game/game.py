@@ -15,8 +15,10 @@ class Game(object):
         self.load_resources()
         pygame.display.set_icon(self.icon_img)
         pygame.display.set_caption('Intergalactic Uprising')
+        info = pygame.display.Info()
         self.screen = pygame.display.set_mode(
-            (settings.WIDTH, settings.HEIGHT)
+            (info.current_w, info.current_h),
+            pygame.FULLSCREEN
         )
         self.sprites = pygame.sprite.Group()
         self.players = pygame.sprite.Group()
