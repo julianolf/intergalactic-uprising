@@ -18,8 +18,8 @@ class Menu(object):
             ['EXIT', self.exit])
 
         pos = (
-            (settings.WIDTH / 2 - 79),
-            (settings.HEIGHT / 2 + 79)
+            (self.game.display.current_w / 2 - 79),
+            (self.game.display.current_h / 2 + 79)
         )
         self.menu.position = pos
         self.menu.color = settings.MENU_FONT_COLOR
@@ -42,7 +42,7 @@ class Menu(object):
 
     def draw(self):
         """Draws menu on screen."""
-        centerx = settings.WIDTH / 2
+        centerx = self.game.display.current_w / 2
         title1 = {
             'text': 'Intergalactic',
             'pos': (centerx - 15, 140),
@@ -59,7 +59,7 @@ class Menu(object):
                 pygame.event.get(),
                 self.game.clock.tick(settings.FPS) / 1000.
             )
-            self.game.fill_background(self.game.black_bg_img)
+            self.game.fill_background()
             self.game.draw_text(**title1)
             self.game.draw_text(**title2)
             self.menu.draw(self.game.screen)

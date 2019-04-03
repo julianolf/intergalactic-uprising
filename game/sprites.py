@@ -2,6 +2,65 @@ import pygame
 import random
 from game import settings
 from enum import Enum
+from xml.dom import minidom
+
+class Spritesheet(object):
+    """Manage image spritesheets."""
+
+    def __init__(self, file_name, color_key=settings.BLACK):
+        """
+        Args:
+            file_name (str): Spritesheet (full path) file name.
+        """
+        super(Spritesheet, self).__init__()
+        self.image = pygame.image.load(file_name).convert_alpha()
+        self.info = minidom.parse(file_name.replace('.png', '.xml'))
+        self.color_key = color_key
+
+    def get_info(self, image_name):
+        """Get image position and size.
+
+        Return where in the spritesheet the image starts and what is its size.
+
+        Args:
+            image_name (str): The image name.
+
+        Returns:
+            Four values are returned (x, y, w, h).
+            x (int): X axis value.
+            y (int): Y axis value.
+            w (int): Image size horizontally.
+            h (int): Image size vertically.
+
+        Raises:
+            ValueError: If no entry was found for image_name.
+        """
+        nodes = self.info.getElementsByTagName('sprite')
+        for node in nodes:
+            if node.getAttribute('n') == image_name:
+                return map(int, (
+                    node.getAttribute('x'),
+                    node.getAttribute('y'),
+                    node.getAttribute('w'),
+                    node.getAttribute('h')
+                ))
+        raise ValueError(f'{image_name} not found in spritesheet.')
+
+    def get_image(self, image_name):
+        """Get image by name.
+
+        Args:
+            image_name (str): The image name.
+
+        Returns:
+            A pygame.Surface instance representing the image.
+        """
+        x, y, width, height = self.get_info(image_name)
+        image = pygame.Surface((width, height))
+        image.blit(self.image, (0, 0), (x, y, width, height))
+        # image = pygame.transform.scale(image, (int(width * 0.75), int(height * 0.75)))
+        image.set_colorkey(self.color_key)
+        return image
 
 
 class Player(pygame.sprite.Sprite):
@@ -19,8 +78,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.game.player_img
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width * .9 / 2)
-        self.rect.centerx = settings.WIDTH / 2
-        self.rect.bottom = settings.HEIGHT - 10
+        self.rect.centerx = self.game.display.current_w / 2
+        self.rect.bottom = self.game.display.current_h - 10
         self.reload = 0
         self.energy = 100
         self.cannon = 1
@@ -45,14 +104,14 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_DOWN]:
             self.rect.y += settings.SPEED
         # If player reaches the boundaries stop moving.
-        if self.rect.right > settings.WIDTH - 10:
-            self.rect.right = settings.WIDTH - 10
+        if self.rect.right > self.game.display.current_w - 10:
+            self.rect.right = self.game.display.current_w - 10
         if self.rect.left < 10:
             self.rect.left = 10
         if self.rect.top < 30:
             self.rect.top = 30
-        if self.rect.bottom > settings.HEIGHT - 10:
-            self.rect.bottom = settings.HEIGHT - 10
+        if self.rect.bottom > self.game.display.current_h - 10:
+            self.rect.bottom = self.game.display.current_h - 10
 
     def shoot(self):
         """Shoots a new laser."""
@@ -165,8 +224,10 @@ class Player(pygame.sprite.Sprite):
         """(Un)Hide the player."""
         self.hidden = not self.hidden
         self.hidden_since = pygame.time.get_ticks()
-        self.rect.centerx = settings.WIDTH / 2
-        self.rect.bottom = settings.HEIGHT + (200 if self.hidden else -10)
+        self.rect.centerx = self.game.display.current_w / 2
+        self.rect.bottom = (
+            self.game.display.current_h + (200 if self.hidden else -10)
+        )
 
     def die(self):
         """Perform animation, play sounds, loses a life
@@ -205,7 +266,9 @@ class Enemy(pygame.sprite.Sprite):
 
     def spawn(self):
         """Defines its start position and directions speed."""
-        self.rect.x = random.randrange(settings.WIDTH - self.rect.width)
+        self.rect.x = random.randrange(
+            self.game.display.current_w - self.rect.width
+        )
         self.rect.y = random.randrange(-100, -40)
         self.speedx = random.randrange(-3, 3)
         self.speedy = random.randrange(1, 8)
@@ -230,9 +293,9 @@ class Enemy(pygame.sprite.Sprite):
         self.hit()
 
         # If enemy left screen respawn it.
-        if (self.rect.top > settings.HEIGHT + 10
+        if (self.rect.top > self.game.display.current_h + 10
                 or self.rect.right < -10
-                or self.rect.left > settings.WIDTH + 10):
+                or self.rect.left > self.game.display.current_w + 10):
             self.spawn()
 
     def destroy(self):
@@ -288,7 +351,7 @@ class Boss(pygame.sprite.Sprite):
         self.radius = int(self.rect.width * .9 / 2)
         self.damage = 0
         self.rect.midtop = (
-            settings.WIDTH / 2,
+            self.game.display.current_w / 2,
             self.rect.height * -1
         )
         self.state = Boss.State.ARRIVING
@@ -421,13 +484,13 @@ class Laser(pygame.sprite.Sprite):
         super(Laser, self).__init__(groups)
         self.game = game
         self.frames = self.game.laser_img
-        self.image = self.frames[0]
+        self.image = self.frames[1]
         self.rect = self.image.get_rect()
         self.radius = int(self.rect.width * .9 / 2)
         self.rect.centerx, self.rect.bottom = pos
         self.speedx, self.speedy = speed
         self.animating = False
-        self.repeat_animation = 1
+        self.repeat_animation = 0
         self.last_update = 0
         self.game.shot_sfx.play()
 
@@ -458,25 +521,26 @@ class Laser(pygame.sprite.Sprite):
 
     def animate(self):
         """Perform laser animation when it hits something."""
-        if self.animating:
-            now = pygame.time.get_ticks()
-            if now - self.last_update > 10:
-                self.last_update = now
-                index = self.frames.index(self.image)
-                # After show the last frame.
-                if index == len(self.frames) - 1:
-                    # Repeat n times them kill the laser sprite.
+        now = pygame.time.get_ticks()
+        if now - self.last_update > 90:
+            self.last_update = now
+            index = self.frames.index(self.image)
+            if self.animating:
+                if index == 7:
                     if self.repeat_animation:
-                        index = 0
+                        index = 3
                         self.repeat_animation -= 1
                     else:
                         self.kill()
                         return
-                # Show the next frame.
-                center = self.rect.center
-                self.image = self.frames[index + 1]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+            else:
+                index = 0 if index == 3 else index
+
+            # Show the next frame.
+            center = self.rect.center
+            self.image = self.frames[index + 1]
+            self.rect = self.image.get_rect()
+            self.rect.center = center
 
     def move(self):
         """Updates laser shot position."""
@@ -497,7 +561,7 @@ class Laser(pygame.sprite.Sprite):
         # If the laser shot has left the screen kill it.
         if (self.rect.bottom < 0
                 or self.rect.right < 0
-                or self.rect.left > settings.WIDTH):
+                or self.rect.left > self.game.display.current_w):
             self.kill()
 
 
@@ -553,7 +617,9 @@ class Meteor(pygame.sprite.Sprite):
 
     def spawn(self):
         """Defines its start position and directions speed."""
-        self.rect.x = random.randrange(settings.WIDTH - self.rect.width)
+        self.rect.x = random.randrange(
+            self.game.display.current_w - self.rect.width
+        )
         self.rect.y = random.randrange(-100, -40)
         self.speedx = random.randrange(-3, 3)
         self.speedy = random.randrange(1, 4)
@@ -620,9 +686,9 @@ class Meteor(pygame.sprite.Sprite):
         self.hit()
 
         # If the meteor left screen respawn it.
-        if (self.rect.top > settings.HEIGHT + 10
+        if (self.rect.top > self.game.display.current_h + 10
                 or self.rect.right < -10
-                or self.rect.left > settings.WIDTH + 10):
+                or self.rect.left > self.game.display.current_w + 10):
             self.game.spawn_meteor()
             self.kill()
 
@@ -734,7 +800,7 @@ class Pow(pygame.sprite.Sprite):
         till it leaves the screen.
         """
         self.rect.y += self.speedy
-        if self.rect.top > settings.HEIGHT:
+        if self.rect.top > self.game.display.current_h:
             self.kill()
 
 

@@ -1,8 +1,6 @@
 import os
 
 # General settings.
-WIDTH = 600
-HEIGHT = 600
 FPS = 60
 
 # Colors definitions.
@@ -18,33 +16,25 @@ RES_DIR = os.path.join(os.path.dirname(__file__), 'res')
 FNT_DIR = os.path.join(RES_DIR, 'font')
 SND_DIR = os.path.join(RES_DIR, 'sound')
 SPR_DIR = os.path.join(RES_DIR, 'sprite')
-SPR_BG_DIR = os.path.join(SPR_DIR, 'background')
-SPR_EN_DIR = os.path.join(SPR_DIR, 'enemy')
-SPR_MT_DIR = os.path.join(SPR_DIR, 'meteor')
-SPR_PL_DIR = os.path.join(SPR_DIR, 'player')
-SPR_PW_DIR = os.path.join(SPR_DIR, 'pow')
-SPR_UI_DIR = os.path.join(SPR_DIR, 'ui')
-SPR_FX_DIR = os.path.join(SPR_DIR, 'fx')
 
 # Image resources.
-ICON_IMG = os.path.join(SPR_UI_DIR, 'icon.png')
-BLACK_BG_IMG = os.path.join(SPR_BG_DIR, 'black.png')
-PLAYER_IMG = os.path.join(SPR_PL_DIR, 'player_ship1_red.png')
-PLAYER_ICO_IMG = os.path.join(SPR_UI_DIR, 'player_life1_red.png')
-ENEMIES_IMG = [os.path.join(SPR_EN_DIR, img) for img in (
-    'enemy_black1.png', 'enemy_black2.png', 'enemy_black3.png',
-    'enemy_black4.png', 'enemy_black5.png', 'enemy_blue1.png',
-    'enemy_blue2.png', 'enemy_blue3.png', 'enemy_blue4.png',
-    'enemy_blue5.png', 'enemy_green1.png', 'enemy_green2.png',
-    'enemy_green3.png', 'enemy_green4.png', 'enemy_green5.png',
-    'enemy_red1.png', 'enemy_red2.png', 'enemy_red3.png',
-    'enemy_red4.png', 'enemy_red5.png'
-)]
-BOSSES_IMG = [os.path.join(SPR_EN_DIR, f'boss{i}.png') for i in range(1, 10)]
-METEORS_IMG = [os.path.join(SPR_MT_DIR, img) for img in (
+SPRITESHEET_IMG = os.path.join(SPR_DIR, 'sheet.png')
+PLAYER_IMG = 'playerShip3_orange.png'
+PLAYER_ICO_IMG = 'playerLife3_orange.png'
+ENEMIES_IMG = (
+    'enemyBlack1.png', 'enemyBlack2.png', 'enemyBlack3.png',
+    'enemyBlack4.png', 'enemyBlack5.png', 'enemyBlue1.png',
+    'enemyBlue2.png', 'enemyBlue3.png', 'enemyBlue4.png',
+    'enemyBlue5.png', 'enemyGreen1.png', 'enemyGreen2.png',
+    'enemyGreen3.png', 'enemyGreen4.png', 'enemyGreen5.png',
+    'enemyRed1.png', 'enemyRed2.png', 'enemyRed3.png',
+    'enemyRed4.png', 'enemyRed5.png'
+)
+BOSSES_IMG = ['spaceShips_001.png']
+METEORS_IMG = (
     'meteorBrown_big1.png', 'meteorBrown_big2.png',
     'meteorBrown_big3.png', 'meteorBrown_big4.png',
-    'meteorBrown_med1.png', 'meteorBrown_med2.png',
+    'meteorBrown_med1.png', 'meteorBrown_med3.png',
     'meteorBrown_small1.png', 'meteorBrown_small2.png',
     'meteorBrown_tiny1.png', 'meteorBrown_tiny2.png',
     'meteorGrey_big1.png', 'meteorGrey_big2.png',
@@ -52,23 +42,24 @@ METEORS_IMG = [os.path.join(SPR_MT_DIR, img) for img in (
     'meteorGrey_med1.png', 'meteorGrey_med2.png',
     'meteorGrey_small1.png', 'meteorGrey_small2.png',
     'meteorGrey_tiny1.png', 'meteorGrey_tiny2.png'
-)]
-EXPLOSIONS_IMG = [os.path.join(SPR_FX_DIR, img) for img in (
-    'explosion01.png', 'explosion02.png',
-    'explosion03.png', 'explosion04.png',
-    'explosion05.png', 'explosion06.png',
-    'explosion07.png', 'explosion08.png',
-    'explosion09.png', 'explosion10.png'
-)]
-POWS_IMG = [os.path.join(SPR_PW_DIR, img) for img in (
-    'pill_blue.png', 'pill_green.png',
-    'pill_red.png', 'pill_yellow.png'
-)]
-LASER_IMG = [os.path.join(SPR_FX_DIR, img) for img in (
-    'laserRed01.png', 'laserRed02.png', 'laserRed03.png',
-    'laserRed04.png', 'laserRed05.png'
-)]
-SHIELD_IMG = [os.path.join(SPR_FX_DIR, f'shield{i}.png') for i in range(1, 3)]
+)
+EXPLOSIONS_IMG = (
+    'explosion1.png', 'explosion2.png',
+    'explosion3.png', 'explosion4.png',
+    'explosion5.png', 'explosionSmoke1.png',
+    'explosionSmoke2.png', 'explosionSmoke3.png',
+    'explosionSmoke4.png', 'explosionSmoke5.png'
+)
+POWS_IMG = (
+    'powerupBlue.png', 'powerupGreen_bolt.png',
+    'powerupRed_star.png', 'powerupYellow_shield.png'
+)
+LASER_IMG = (
+    'laserRed01.png', 'laserRed06.png', 'laserRed07.png',
+    'laserRed16.png', 'laserRed08.png', 'laserRed10.png',
+    'laserRed11.png', 'laserRed09.png'
+)
+SHIELD_IMG = ['shield1.png', 'shield2.png', 'shield3.png']
 
 # SFX resources.
 MAIN_THEME_SFX = os.path.join(SND_DIR, 'sfx_railJet.ogg')

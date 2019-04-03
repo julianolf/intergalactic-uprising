@@ -1,7 +1,7 @@
 import pygame
 from game import settings
 from game import Menu
-from game import Player, Enemy, BossOne, Meteor
+from game import Spritesheet, Player, Enemy, BossOne, Meteor
 
 
 class Game(object):
@@ -12,14 +12,13 @@ class Game(object):
         pygame.init()
         pygame.mixer.init()
         pygame.mixer.music.load(settings.MAIN_THEME_SFX)
-        self.load_resources()
-        pygame.display.set_icon(self.icon_img)
         pygame.display.set_caption('Intergalactic Uprising')
-        info = pygame.display.Info()
+        self.display = pygame.display.Info()
         self.screen = pygame.display.set_mode(
-            (info.current_w, info.current_h),
+            (self.display.current_w, self.display.current_h),
             pygame.FULLSCREEN
         )
+        self.load_resources()
         self.sprites = pygame.sprite.Group()
         self.players = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
@@ -85,14 +84,15 @@ class Game(object):
 
     def draw(self):
         """Put everything on screen."""
-        self.fill_background(self.black_bg_img)
+        self.fill_background()
         self.sprites.draw(self.screen)
-        self.draw_text(str(self.score), (settings.WIDTH / 2, 10))
+        self.draw_text(str(self.score), (self.display.current_w / 2, 10))
         self.draw_bar((self.player.energy / 100), (75, 15))
         self.draw_lives()
         if not self.player.alive():
             # Show game over message.
-            centerx, centery = settings.WIDTH / 2, settings.HEIGHT / 2
+            centerx = self.display.current_w / 2
+            centery = self.display.current_h / 2
             self.draw_text(
                 'Game Over', (centerx, centery - 48), settings.FONT_LG_SIZE)
             self.draw_text('[Return] play again.', (centerx, centery + 24))
@@ -148,11 +148,9 @@ class Game(object):
         self.screen.blit(self.player_ico_img, icon_rect)
         self.draw_text(str(lives), (60, 10))
 
-    def fill_background(self, image):
-        """Fill screen with a single image."""
-        for y in range(0, settings.HEIGHT, image.get_height()):
-            for x in range(0, settings.WIDTH, image.get_width()):
-                self.screen.blit(image, (x, y))
+    def fill_background(self):
+        """Fill screen background."""
+        self.screen.fill(settings.BLACK)
 
     def spawn_enemy(self):
         """Spawns a new enemy."""
@@ -180,20 +178,19 @@ class Game(object):
 
     def load_resources(self):
         """Loads resource data like images and sfx."""
-        self.icon_img = pygame.image.load(settings.ICON_IMG)
-        self.black_bg_img = pygame.image.load(settings.BLACK_BG_IMG)
-        self.player_img = pygame.image.load(settings.PLAYER_IMG)
-        self.player_ico_img = pygame.image.load(settings.PLAYER_ICO_IMG)
-        self.enemies_img = [pygame.image.load(e) for e in settings.ENEMIES_IMG]
-        self.bosses_img = [pygame.image.load(b) for b in settings.BOSSES_IMG]
-        self.meteors_img = [pygame.image.load(m) for m in settings.METEORS_IMG]
+        self.spritesheet = Spritesheet(settings.SPRITESHEET_IMG)
+        self.player_img = self.spritesheet.get_image(settings.PLAYER_IMG)
+        self.player_ico_img = self.spritesheet.get_image(settings.PLAYER_ICO_IMG)
+        self.enemies_img = [self.spritesheet.get_image(e) for e in settings.ENEMIES_IMG]
+        self.bosses_img = [self.spritesheet.get_image(b) for b in settings.BOSSES_IMG]
+        self.meteors_img = [self.spritesheet.get_image(m) for m in settings.METEORS_IMG]
         self.explosions_img = [
-            pygame.image.load(e)
+            self.spritesheet.get_image(e)
             for e in settings.EXPLOSIONS_IMG
         ]
-        self.pows_img = [pygame.image.load(p) for p in settings.POWS_IMG]
-        self.laser_img = [pygame.image.load(l) for l in settings.LASER_IMG]
-        self.shield_img = [pygame.image.load(s) for s in settings.SHIELD_IMG]
+        self.pows_img = [self.spritesheet.get_image(p) for p in settings.POWS_IMG]
+        self.laser_img = [self.spritesheet.get_image(l) for l in settings.LASER_IMG]
+        self.shield_img = [self.spritesheet.get_image(s) for s in settings.SHIELD_IMG]
         self.shot_sfx = pygame.mixer.Sound(settings.SHOT_SFX)
         self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
         self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)
