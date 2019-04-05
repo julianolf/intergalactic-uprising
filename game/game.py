@@ -12,6 +12,7 @@ class Game(object):
         pygame.init()
         pygame.mixer.init()
         pygame.mixer.music.load(settings.MAIN_THEME_SFX)
+        pygame.mouse.set_visible(False)
         pygame.display.set_caption('Intergalactic Uprising')
         self.display = pygame.display.Info()
         self.screen = pygame.display.set_mode(
