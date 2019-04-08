@@ -58,3 +58,6 @@ target/
 
 # Virtual environment directory
 venv/
+
+# VS Code settings
+.vscode
