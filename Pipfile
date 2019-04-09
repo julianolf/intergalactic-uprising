@@ -11,6 +11,10 @@ pygame = "*"
 "flake8" = "*"
 ipdb = "*"
 pytest = "*"
+black = "*"
 
 [requires]
 python_version = "3.7.0"
+
+[pipenv]
+allow_prereleases = true
