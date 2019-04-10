@@ -1,8 +1,11 @@
-import pygame
 import random
-from game import settings
 from enum import Enum
 from xml.dom import minidom
+
+import pygame
+
+from game import settings
+
 
 class Spritesheet(object):
     """Manage image spritesheets."""
@@ -14,7 +17,7 @@ class Spritesheet(object):
         """
         super(Spritesheet, self).__init__()
         self.image = pygame.image.load(file_name).convert_alpha()
-        self.info = minidom.parse(file_name.replace('.png', '.xml'))
+        self.info = minidom.parse(file_name.replace(".png", ".xml"))
         self.color_key = color_key
 
     def get_info(self, image_name):
@@ -35,16 +38,19 @@ class Spritesheet(object):
         Raises:
             ValueError: If no entry was found for image_name.
         """
-        nodes = self.info.getElementsByTagName('sprite')
+        nodes = self.info.getElementsByTagName("sprite")
         for node in nodes:
-            if node.getAttribute('n') == image_name:
-                return map(int, (
-                    node.getAttribute('x'),
-                    node.getAttribute('y'),
-                    node.getAttribute('w'),
-                    node.getAttribute('h')
-                ))
-        raise ValueError(f'{image_name} not found in spritesheet.')
+            if node.getAttribute("n") == image_name:
+                return map(
+                    int,
+                    (
+                        node.getAttribute("x"),
+                        node.getAttribute("y"),
+                        node.getAttribute("w"),
+                        node.getAttribute("h"),
+                    ),
+                )
+        raise ValueError(f"{image_name} not found in spritesheet.")
 
     def get_image(self, image_name):
         """Get image by name.
@@ -58,7 +64,9 @@ class Spritesheet(object):
         x, y, width, height = self.get_info(image_name)
         image = pygame.Surface((width, height))
         image.blit(self.image, (0, 0), (x, y, width, height))
-        # image = pygame.transform.scale(image, (int(width * 0.75), int(height * 0.75)))
+        # image = pygame.transform.scale(
+        #     image, (int(width * 0.75), int(height * 0.75))
+        # )
         image.set_colorkey(self.color_key)
         return image
 
@@ -77,7 +85,7 @@ class Player(pygame.sprite.Sprite):
         self.game = game
         self.image = self.game.player_img
         self.rect = self.image.get_rect()
-        self.radius = int(self.rect.width * .9 / 2)
+        self.radius = int(self.rect.width * 0.9 / 2)
         self.rect.centerx = self.game.display.current_w / 2
         self.rect.bottom = self.game.display.current_h - 10
         self.reload = 0
@@ -121,47 +129,45 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         now = pygame.time.get_ticks()
         time_needed = 400 if self.cannon < 5 else 200
-        elapsed_time = (now - self.reload > time_needed)
+        elapsed_time = now - self.reload > time_needed
         if keys[pygame.K_SPACE] and elapsed_time:
             self.reload = now
             params = {
-                'game': self.game,
-                'speed': (0, -10),
-                'groups': [self.game.sprites, self.game.shots]
+                "game": self.game,
+                "speed": (0, -10),
+                "groups": [self.game.sprites, self.game.shots],
             }
             shots = []
             if self.cannon == 1:
-                shots = [
-                    {'pos': (self.rect.centerx, self.rect.top)}
-                ]
+                shots = [{"pos": (self.rect.centerx, self.rect.top)}]
             elif self.cannon == 2:
                 shots = [
-                    {'pos': (self.rect.centerx - 5, self.rect.top)},
-                    {'pos': (self.rect.centerx + 5, self.rect.top)}
+                    {"pos": (self.rect.centerx - 5, self.rect.top)},
+                    {"pos": (self.rect.centerx + 5, self.rect.top)},
                 ]
             elif self.cannon == 3:
                 shots = [
-                    {'pos': (self.rect.centerx - 22, self.rect.top + 15)},
-                    {'pos': (self.rect.centerx + 22, self.rect.top + 15)}
+                    {"pos": (self.rect.centerx - 22, self.rect.top + 15)},
+                    {"pos": (self.rect.centerx + 22, self.rect.top + 15)},
                 ]
             elif self.cannon == 4:
                 shots = [
-                    {'pos': (self.rect.centerx, self.rect.top)},
+                    {"pos": (self.rect.centerx, self.rect.top)},
                     {
-                        'pos': (self.rect.centerx - 10, self.rect.top),
-                        'speed': (-1, -10)
+                        "pos": (self.rect.centerx - 10, self.rect.top),
+                        "speed": (-1, -10),
                     },
                     {
-                        'pos': (self.rect.centerx + 10, self.rect.top),
-                        'speed': (1, -10)
-                    }
+                        "pos": (self.rect.centerx + 10, self.rect.top),
+                        "speed": (1, -10),
+                    },
                 ]
             else:
                 shots = [
-                    {'pos': (self.rect.centerx - 15, self.rect.top + 15)},
-                    {'pos': (self.rect.centerx + 15, self.rect.top + 15)},
-                    {'pos': (self.rect.centerx - 25, self.rect.top + 15)},
-                    {'pos': (self.rect.centerx + 25, self.rect.top + 15)}
+                    {"pos": (self.rect.centerx - 15, self.rect.top + 15)},
+                    {"pos": (self.rect.centerx + 15, self.rect.top + 15)},
+                    {"pos": (self.rect.centerx - 25, self.rect.top + 15)},
+                    {"pos": (self.rect.centerx + 25, self.rect.top + 15)},
                 ]
             for shot in shots:
                 shot_params = {**params, **shot}
@@ -173,11 +179,14 @@ class Player(pygame.sprite.Sprite):
             return
 
         enemies_hits = pygame.sprite.spritecollide(
-            self, self.game.enemies, True, pygame.sprite.collide_circle)
+            self, self.game.enemies, True, pygame.sprite.collide_circle
+        )
         meteors_hits = pygame.sprite.spritecollide(
-            self, self.game.meteors, True, pygame.sprite.collide_circle)
+            self, self.game.meteors, True, pygame.sprite.collide_circle
+        )
         pows_hits = pygame.sprite.spritecollide(
-                self, self.game.pows, True, pygame.sprite.collide_circle)
+            self, self.game.pows, True, pygame.sprite.collide_circle
+        )
 
         for hit in enemies_hits + meteors_hits:
             self.energy -= hit.radius * 2
@@ -201,9 +210,7 @@ class Player(pygame.sprite.Sprite):
                 if not self.shield:
                     self.shield = True
                     Shield(
-                        self.game,
-                        self,
-                        [self.game.shields, self.game.sprites]
+                        self.game, self, [self.game.shields, self.game.sprites]
                     )
 
     def update(self):
@@ -225,8 +232,8 @@ class Player(pygame.sprite.Sprite):
         self.hidden = not self.hidden
         self.hidden_since = pygame.time.get_ticks()
         self.rect.centerx = self.game.display.current_w / 2
-        self.rect.bottom = (
-            self.game.display.current_h + (200 if self.hidden else -10)
+        self.rect.bottom = self.game.display.current_h + (
+            200 if self.hidden else -10
         )
 
     def die(self):
@@ -235,7 +242,7 @@ class Player(pygame.sprite.Sprite):
         Explosion(
             self.game,
             self.rect.center,
-            [self.game.explosions, self.game.sprites]
+            [self.game.explosions, self.game.sprites],
         )
         self.hide()
         self.game.killed_sfx.play()
@@ -259,7 +266,7 @@ class Enemy(pygame.sprite.Sprite):
         random_image = random.choice(self.game.enemies_img)
         self.image = random_image
         self.rect = self.image.get_rect()
-        self.radius = int(self.rect.width * .9 / 2)
+        self.radius = int(self.rect.width * 0.9 / 2)
         self.endurance = self.game.enemies_img.index(random_image) + 1
         self.damage = 0
         self.spawn()
@@ -281,7 +288,8 @@ class Enemy(pygame.sprite.Sprite):
     def hit(self):
         """Checks if the enemy has hit something."""
         if pygame.sprite.spritecollide(
-                self, self.game.shields, False, pygame.sprite.collide_circle):
+            self, self.game.shields, False, pygame.sprite.collide_circle
+        ):
             self.destroy()
 
     def update(self):
@@ -293,9 +301,11 @@ class Enemy(pygame.sprite.Sprite):
         self.hit()
 
         # If enemy left screen respawn it.
-        if (self.rect.top > self.game.display.current_h + 10
-                or self.rect.right < -10
-                or self.rect.left > self.game.display.current_w + 10):
+        if (
+            self.rect.top > self.game.display.current_h + 10
+            or self.rect.right < -10
+            or self.rect.left > self.game.display.current_w + 10
+        ):
             self.spawn()
 
     def destroy(self):
@@ -304,12 +314,12 @@ class Enemy(pygame.sprite.Sprite):
             Pow(
                 self.game,
                 self.rect.center,
-                [self.game.pows, self.game.sprites]
+                [self.game.pows, self.game.sprites],
             )
         Explosion(
             self.game,
             self.rect.center,
-            [self.game.explosions, self.game.sprites]
+            [self.game.explosions, self.game.sprites],
         )
         self.kill()
         self.game.spawn_enemy()
@@ -321,6 +331,7 @@ class Boss(pygame.sprite.Sprite):
     Attributes:
         State: A subclass defining the sprite state.
     """
+
     class State(Enum):
         """Sprite states.
 
@@ -329,6 +340,7 @@ class Boss(pygame.sprite.Sprite):
             SEEKING: Tells the enemy is seeking the player.
             ATTACKING: Tells the enemy is about to attack.
         """
+
         ARRIVING = 0
         SEEKING = 1
         ATTACKING = 2
@@ -344,15 +356,16 @@ class Boss(pygame.sprite.Sprite):
         super(Boss, self).__init__(groups)
         self.game = game
         self.image = (
-            self.game.bosses_img[which] if which is not None
+            self.game.bosses_img[which]
+            if which is not None
             else random.choice(self.game.bosses_img)
         )
         self.rect = self.image.get_rect()
-        self.radius = int(self.rect.width * .9 / 2)
+        self.radius = int(self.rect.width * 0.9 / 2)
         self.damage = 0
         self.rect.midtop = (
             self.game.display.current_w / 2,
-            self.rect.height * -1
+            self.rect.height * -1,
         )
         self.state = Boss.State.ARRIVING
 
@@ -391,7 +404,7 @@ class Boss(pygame.sprite.Sprite):
         Explosion(
             self.game,
             self.rect.center,
-            [self.game.explosions, self.game.sprites]
+            [self.game.explosions, self.game.sprites],
         )
         self.kill()
         self.game.enemies_remaining = 100
@@ -400,6 +413,7 @@ class Boss(pygame.sprite.Sprite):
 
 class BossOne(Boss):
     """Describes first boss moving pattern and attack."""
+
     def __init__(self, game, groups=[]):
         """Initializes the first boss.
 
@@ -427,7 +441,8 @@ class BossOne(Boss):
                 self.state = Boss.State.SEEKING
         elif self.state == Boss.State.SEEKING:
             if self.gotox not in range(
-                    self.rect.centerx - 2, self.rect.centerx + 3):
+                self.rect.centerx - 2, self.rect.centerx + 3
+            ):
                 self.speedx = 2 if self.rect.centerx < self.gotox else -2
             else:
                 self.speedx = 0
@@ -450,13 +465,13 @@ class BossOne(Boss):
                         self.game,
                         (self.rect.centerx - 32, self.rect.bottom + 30),
                         [self.game.enemies_shots, self.game.sprites],
-                        (-2, 10)
+                        (-2, 10),
                     )
                     EnemyLaser(
                         self.game,
                         (self.rect.centerx + 32, self.rect.bottom + 30),
                         [self.game.enemies_shots, self.game.sprites],
-                        (2, 10)
+                        (2, 10),
                     )
             else:
                 self.reloading = True
@@ -486,7 +501,7 @@ class Laser(pygame.sprite.Sprite):
         self.frames = self.game.laser_img
         self.image = self.frames[1]
         self.rect = self.image.get_rect()
-        self.radius = int(self.rect.width * .9 / 2)
+        self.radius = int(self.rect.width * 0.9 / 2)
         self.rect.centerx, self.rect.bottom = pos
         self.speedx, self.speedy = speed
         self.animating = False
@@ -498,9 +513,11 @@ class Laser(pygame.sprite.Sprite):
         """Checks if the shot has hit something."""
         # If the shot has hit an enemy it causes some damage.
         enemies_hits = pygame.sprite.spritecollide(
-            self, self.game.enemies, False, pygame.sprite.collide_circle)
+            self, self.game.enemies, False, pygame.sprite.collide_circle
+        )
         bosses_hits = pygame.sprite.spritecollide(
-            self, self.game.bosses, False, pygame.sprite.collide_circle)
+            self, self.game.bosses, False, pygame.sprite.collide_circle
+        )
         for hit in enemies_hits + bosses_hits:
             hit.damage += 5
             # If the enemy has died the player scores.
@@ -514,7 +531,8 @@ class Laser(pygame.sprite.Sprite):
                 self.animating = True
         # If the shot has hit a meteor just kill the laser.
         for hit in pygame.sprite.spritecollide(
-                self, self.game.meteors, False, pygame.sprite.collide_circle):
+            self, self.game.meteors, False, pygame.sprite.collide_circle
+        ):
             self.speedy = hit.speedy
             self.speedx = hit.speedx
             self.animating = True
@@ -559,9 +577,11 @@ class Laser(pygame.sprite.Sprite):
         self.animate()
 
         # If the laser shot has left the screen kill it.
-        if (self.rect.bottom < 0
-                or self.rect.right < 0
-                or self.rect.left > self.game.display.current_w):
+        if (
+            self.rect.bottom < 0
+            or self.rect.right < 0
+            or self.rect.left > self.game.display.current_w
+        ):
             self.kill()
 
 
@@ -571,7 +591,8 @@ class EnemyLaser(Laser):
     def hit(self):
         """Checks if the shot has hit something."""
         for hit in pygame.sprite.spritecollide(
-                self, self.game.players, False, pygame.sprite.collide_circle):
+            self, self.game.players, False, pygame.sprite.collide_circle
+        ):
             hit.energy -= 35
             if hit.energy <= 0:
                 hit.die()
@@ -583,15 +604,18 @@ class EnemyLaser(Laser):
         # If the shot has hit an enemy, a meteor or a shield
         # just kill the laser.
         enemies_hits = pygame.sprite.spritecollide(
-            self, self.game.enemies, False, pygame.sprite.collide_circle)
+            self, self.game.enemies, False, pygame.sprite.collide_circle
+        )
         meteors_hits = pygame.sprite.spritecollide(
-            self, self.game.meteors, False, pygame.sprite.collide_circle)
+            self, self.game.meteors, False, pygame.sprite.collide_circle
+        )
         for hit in enemies_hits + meteors_hits:
             self.speedy = hit.speedy
             self.speedx = hit.speedx
             self.animating = True
         if pygame.sprite.spritecollide(
-                self, self.game.shields, False, pygame.sprite.collide_circle):
+            self, self.game.shields, False, pygame.sprite.collide_circle
+        ):
             self.speedy = 0
             self.speedx = 0
             self.animating = True
@@ -612,7 +636,7 @@ class Meteor(pygame.sprite.Sprite):
         self._image = random.choice(self.game.meteors_img)
         self.image = self._image.copy()
         self.rect = self.image.get_rect()
-        self.radius = int(self.rect.width * .9 / 2)
+        self.radius = int(self.rect.width * 0.9 / 2)
         self.spawn()
 
     def spawn(self):
@@ -643,19 +667,23 @@ class Meteor(pygame.sprite.Sprite):
     def hit(self):
         """Checks if the meteor has hit another meteor."""
         for hit in pygame.sprite.spritecollide(
-                self, self.game.meteors, False, pygame.sprite.collide_circle):
+            self, self.game.meteors, False, pygame.sprite.collide_circle
+        ):
             # Ignore self collision.
             if hit != self:
                 now = pygame.time.get_ticks()
                 # If the last collision occurred at least 3s ago
                 # and it did not hit the center of the meteor.
-                if ((self.last_collision == 0
-                    or now - self.last_collision > 2000)
-                        and not hit.rect.collidepoint(self.rect.center)):
+                if (
+                    self.last_collision == 0
+                    or now - self.last_collision > 2000
+                ) and not hit.rect.collidepoint(self.rect.center):
                     self.last_collision = now
                     # If the meteor hit was way too small destroy it.
-                    if (self.radius > hit.radius
-                            and self.radius - hit.radius > 40):
+                    if (
+                        self.radius > hit.radius
+                        and self.radius - hit.radius > 40
+                    ):
                         self.destroy()
                     else:
                         # Perform some changes in the meteor course.
@@ -668,7 +696,8 @@ class Meteor(pygame.sprite.Sprite):
                         self.rot_speed *= -1
         # If it hits a shield it has to be destroyed.
         if pygame.sprite.spritecollide(
-                self, self.game.shields, False, pygame.sprite.collide_circle):
+            self, self.game.shields, False, pygame.sprite.collide_circle
+        ):
             self.destroy()
 
     def move(self):
@@ -686,9 +715,11 @@ class Meteor(pygame.sprite.Sprite):
         self.hit()
 
         # If the meteor left screen respawn it.
-        if (self.rect.top > self.game.display.current_h + 10
-                or self.rect.right < -10
-                or self.rect.left > self.game.display.current_w + 10):
+        if (
+            self.rect.top > self.game.display.current_h + 10
+            or self.rect.right < -10
+            or self.rect.left > self.game.display.current_w + 10
+        ):
             self.game.spawn_meteor()
             self.kill()
 
@@ -698,7 +729,7 @@ class Meteor(pygame.sprite.Sprite):
             self.game,
             self.rect.center,
             [self.game.explosions, self.game.sprites],
-            Explosion.Type.SMOKE
+            Explosion.Type.SMOKE,
         )
         self.kill()
         self.game.spawn_meteor()
@@ -710,12 +741,14 @@ class Explosion(pygame.sprite.Sprite):
     Attributes:
         Type: A sub-class defining explosion types.
     """
+
     class Type(Enum):
         """Explosion types.
 
         The values indicate the position of the
         first image used to animate the explosion.
         """
+
         FIRE = 0
         SMOKE = 5
 
@@ -730,8 +763,9 @@ class Explosion(pygame.sprite.Sprite):
         """
         super(Explosion, self).__init__(groups)
         self.game = game
-        self.type = (xtype if type(xtype) == Explosion.Type
-                     else Explosion.Type(0))
+        self.type = (
+            xtype if type(xtype) == Explosion.Type else Explosion.Type(0)
+        )
         self.frame = self.type.value
         self.image = self.game.explosions_img[self.frame]
         self.rect = self.image.get_rect()
@@ -760,6 +794,7 @@ class Pow(pygame.sprite.Sprite):
     Attributes:
         Type: A sub-class defining power up types.
     """
+
     class Type(Enum):
         """Power up types.
 
@@ -769,6 +804,7 @@ class Pow(pygame.sprite.Sprite):
             Red pill: Life up.
             Yellow pill: Shield up.
         """
+
         BLUE = 0
         GREEN = 1
         RED = 2
@@ -785,12 +821,13 @@ class Pow(pygame.sprite.Sprite):
         """
         super(Pow, self).__init__(groups)
         self.game = game
-        self.type = (ptype if type(ptype) == Pow.Type
-                     else Pow.Type(random.randrange(4)))
+        self.type = (
+            ptype if type(ptype) == Pow.Type else Pow.Type(random.randrange(4))
+        )
         self.image = self.game.pows_img[self.type.value]
         self.rect = self.image.get_rect()
         self.rect.center = pos
-        self.radius = int(self.rect.width * .9 / 2)
+        self.radius = int(self.rect.width * 0.9 / 2)
         self.speedy = 2
 
     def update(self):

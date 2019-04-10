@@ -1,7 +1,6 @@
 import pygame
-from game import settings
-from game import Menu
-from game import Spritesheet, Player, Enemy, BossOne, Meteor
+
+from game import BossOne, Enemy, Menu, Meteor, Player, Spritesheet, settings
 
 
 class Game(object):
@@ -13,11 +12,10 @@ class Game(object):
         pygame.mixer.init()
         pygame.mixer.music.load(settings.MAIN_THEME_SFX)
         pygame.mouse.set_visible(False)
-        pygame.display.set_caption('Intergalactic Uprising')
+        pygame.display.set_caption("Intergalactic Uprising")
         self.display = pygame.display.Info()
         self.screen = pygame.display.set_mode(
-            (self.display.current_w, self.display.current_h),
-            pygame.FULLSCREEN
+            (self.display.current_w, self.display.current_h), pygame.FULLSCREEN
         )
         self.load_resources()
         self.sprites = pygame.sprite.Group()
@@ -95,13 +93,15 @@ class Game(object):
             centerx = self.display.current_w / 2
             centery = self.display.current_h / 2
             self.draw_text(
-                'Game Over', (centerx, centery - 48), settings.FONT_LG_SIZE)
-            self.draw_text('[Return] play again.', (centerx, centery + 24))
-            self.draw_text('[Escape] main menu.', (centerx, centery + 48))
+                "Game Over", (centerx, centery - 48), settings.FONT_LG_SIZE
+            )
+            self.draw_text("[Return] play again.", (centerx, centery + 24))
+            self.draw_text("[Escape] main menu.", (centerx, centery + 48))
         pygame.display.flip()
 
-    def draw_text(self, text, pos,
-                  size=settings.FONT_SIZE, color=settings.WHITE):
+    def draw_text(
+        self, text, pos, size=settings.FONT_SIZE, color=settings.WHITE
+    ):
         """Draws a text on screen.
 
         Args:
@@ -128,9 +128,9 @@ class Game(object):
         width, height = 100, 10
         fill = percent * width
         if not color:
-            if percent < .2:
+            if percent < 0.2:
                 color = settings.RED
-            elif percent < .5:
+            elif percent < 0.5:
                 color = settings.YELLOW
             else:
                 color = settings.GREEN
@@ -181,17 +181,30 @@ class Game(object):
         """Loads resource data like images and sfx."""
         self.spritesheet = Spritesheet(settings.SPRITESHEET_IMG)
         self.player_img = self.spritesheet.get_image(settings.PLAYER_IMG)
-        self.player_ico_img = self.spritesheet.get_image(settings.PLAYER_ICO_IMG)
-        self.enemies_img = [self.spritesheet.get_image(e) for e in settings.ENEMIES_IMG]
-        self.bosses_img = [self.spritesheet.get_image(b) for b in settings.BOSSES_IMG]
-        self.meteors_img = [self.spritesheet.get_image(m) for m in settings.METEORS_IMG]
-        self.explosions_img = [
-            self.spritesheet.get_image(e)
-            for e in settings.EXPLOSIONS_IMG
+        self.player_ico_img = self.spritesheet.get_image(
+            settings.PLAYER_ICO_IMG
+        )
+        self.enemies_img = [
+            self.spritesheet.get_image(e) for e in settings.ENEMIES_IMG
         ]
-        self.pows_img = [self.spritesheet.get_image(p) for p in settings.POWS_IMG]
-        self.laser_img = [self.spritesheet.get_image(l) for l in settings.LASER_IMG]
-        self.shield_img = [self.spritesheet.get_image(s) for s in settings.SHIELD_IMG]
+        self.bosses_img = [
+            self.spritesheet.get_image(b) for b in settings.BOSSES_IMG
+        ]
+        self.meteors_img = [
+            self.spritesheet.get_image(m) for m in settings.METEORS_IMG
+        ]
+        self.explosions_img = [
+            self.spritesheet.get_image(e) for e in settings.EXPLOSIONS_IMG
+        ]
+        self.pows_img = [
+            self.spritesheet.get_image(p) for p in settings.POWS_IMG
+        ]
+        self.laser_img = [
+            self.spritesheet.get_image(l) for l in settings.LASER_IMG
+        ]
+        self.shield_img = [
+            self.spritesheet.get_image(s) for s in settings.SHIELD_IMG
+        ]
         self.shot_sfx = pygame.mixer.Sound(settings.SHOT_SFX)
         self.killed_sfx = pygame.mixer.Sound(settings.KILLED_SFX)
         self.explosion_sfx = pygame.mixer.Sound(settings.EXPLOSION_SFX)

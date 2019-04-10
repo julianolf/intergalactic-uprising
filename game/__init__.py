@@ -1,10 +1,27 @@
 from game.menu import Menu
-from game.sprites import Spritesheet, Player, Enemy, Boss, BossOne
-from game.sprites import Laser, Meteor, Explosion, Pow
+from game.sprites import (
+    Boss,
+    BossOne,
+    Enemy,
+    Explosion,
+    Laser,
+    Meteor,
+    Player,
+    Pow,
+    Spritesheet,
+)
 from game.game import Game
 
 __all__ = [
-    'Menu', 'Spritesheet', 'Player', 'Enemy', 'Boss',
-    'BossOne', 'Laser', 'Meteor', 'Explosion',
-    'Pow', 'Game'
+    "Boss",
+    "BossOne",
+    "Enemy",
+    "Explosion",
+    "Game",
+    "Laser",
+    "Menu",
+    "Meteor",
+    "Player",
+    "Pow",
+    "Spritesheet",
 ]
