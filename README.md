@@ -1,5 +1,5 @@
 # Intergalactic Uprising
-[![Dependabot: enabled](https://img.shields.io/badge/Dependabot-enabled-brightgreen.svg?logo=dependabot)](https://dependabot.com) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black) [![License: MIT](https://img.shields.io/github/license/julianolf/intergalactic-uprising.svg)](https://opensource.org/licenses/MIT)
+[![Updates](https://pyup.io/repos/github/julianolf/intergalactic-uprising/shield.svg)](https://pyup.io/repos/github/julianolf/intergalactic-uprising/) [![Python 3](https://pyup.io/repos/github/julianolf/intergalactic-uprising/python-3-shield.svg)](https://pyup.io/repos/github/julianolf/intergalactic-uprising/) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black) [![License: MIT](https://img.shields.io/github/license/julianolf/intergalactic-uprising.svg)](https://opensource.org/licenses/MIT)
 
 A space shooting game written in Python.
 
