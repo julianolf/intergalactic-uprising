@@ -13,10 +13,10 @@ class Game(object):
         pygame.mixer.music.load(settings.MAIN_THEME_SFX)
         pygame.mouse.set_visible(False)
         pygame.display.set_caption("Intergalactic Uprising")
-        self.display = pygame.display.Info()
         self.screen = pygame.display.set_mode(
-            (self.display.current_w, self.display.current_h), pygame.FULLSCREEN
+            (settings.WIDTH, settings.HEIGHT)
         )
+        self.display = pygame.display.Info()
         self.load_resources()
         self.sprites = pygame.sprite.Group()
         self.players = pygame.sprite.Group()
