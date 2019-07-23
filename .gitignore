@@ -61,3 +61,6 @@ venv/
 
 # VS Code settings
 .vscode
+
+# Pyenv
+.python-version
