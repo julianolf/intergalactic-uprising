@@ -659,6 +659,7 @@ class Meteor(pygame.sprite.Sprite):
             self.last_rotation = now
             self.rot = (self.rot + self.rot_speed) % 360
             image = pygame.transform.rotate(self._image, self.rot)
+            image.set_colorkey(settings.BLACK)
             center = self.rect.center
             self.image = image
             self.rect = self.image.get_rect()
