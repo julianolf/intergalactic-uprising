@@ -16,7 +16,7 @@ class Spritesheet(object):
             file_name (str): Spritesheet (full path) file name.
         """
         super(Spritesheet, self).__init__()
-        self.image = pygame.image.load(file_name).convert_alpha()
+        self.image = pygame.image.load(file_name).convert()
         self.info = minidom.parse(file_name.replace(".png", ".xml"))
         self.color_key = color_key
 
@@ -64,9 +64,9 @@ class Spritesheet(object):
         x, y, width, height = self.get_info(image_name)
         image = pygame.Surface((width, height))
         image.blit(self.image, (0, 0), (x, y, width, height))
-        # image = pygame.transform.scale(
-        #     image, (int(width * 0.75), int(height * 0.75))
-        # )
+        image = pygame.transform.scale(
+            image, (int(width * 0.50), int(height * 0.50))
+        )
         image.set_colorkey(self.color_key)
         return image
 
