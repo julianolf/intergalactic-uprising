@@ -2,8 +2,8 @@ import os
 
 # General settings.
 FPS = 60
-WIDTH = 600
-HEIGHT = 600
+WIDTH = 720
+HEIGHT = 720
 
 # Colors definitions.
 BLACK = (0, 0, 0)
