@@ -21,7 +21,8 @@ SPR_DIR = os.path.join(RES_DIR, "sprite")
 
 # Image resources.
 SPRITESHEET_IMG = os.path.join(SPR_DIR, "sheet.png")
-PLAYER_IMG = "playerShip3_orange.png"
+PLAYER_SPRITESHEET_IMG = os.path.join(SPR_DIR, "player_spritesheet.png")
+PLAYER_IMG = (f"ship0{i:02}.png" for i in range(76))
 PLAYER_ICO_IMG = "playerLife3_orange.png"
 ENEMIES_IMG = (
     "enemyBlack1.png",

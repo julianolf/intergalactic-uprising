@@ -85,6 +85,7 @@ class Game(object):
         """Put everything on screen."""
         self.fill_background()
         self.sprites.draw(self.screen)
+        pygame.draw.rect(self.screen, settings.RED, self.player.rect, 2)  # dbg
         self.draw_text(str(self.score), (self.display.current_w / 2, 10))
         self.draw_bar((self.player.energy / 100), (75, 15))
         self.draw_lives()
@@ -180,7 +181,10 @@ class Game(object):
     def load_resources(self):
         """Loads resource data like images and sfx."""
         self.spritesheet = Spritesheet(settings.SPRITESHEET_IMG)
-        self.player_img = self.spritesheet.get_image(settings.PLAYER_IMG)
+        self.player_spritesheet = Spritesheet(settings.PLAYER_SPRITESHEET_IMG)
+        self.player_img = [
+            self.player_spritesheet.get_image(p) for p in settings.PLAYER_IMG
+        ]
         self.player_ico_img = self.spritesheet.get_image(
             settings.PLAYER_ICO_IMG
         )

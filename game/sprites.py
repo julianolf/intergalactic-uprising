@@ -64,9 +64,9 @@ class Spritesheet(object):
         x, y, width, height = self.get_info(image_name)
         image = pygame.Surface((width, height))
         image.blit(self.image, (0, 0), (x, y, width, height))
-        image = pygame.transform.scale(
-            image, (int(width * 0.50), int(height * 0.50))
-        )
+        # image = pygame.transform.scale(
+        #     image, (int(width * 0.50), int(height * 0.50))
+        # )
         image.set_colorkey(self.color_key)
         return image
 
@@ -83,9 +83,9 @@ class Player(pygame.sprite.Sprite):
         """
         super(Player, self).__init__(groups)
         self.game = game
-        self.image = self.game.player_img
+        self.frames = self.game.player_img
+        self.image = self.frames[0]
         self.rect = self.image.get_rect()
-        self.radius = int(self.rect.width * 0.9 / 2)
         self.rect.centerx = self.game.display.current_w / 2
         self.rect.bottom = self.game.display.current_h - 10
         self.reload = 0
@@ -95,6 +95,7 @@ class Player(pygame.sprite.Sprite):
         self.shield = False
         self.hidden = False
         self.hidden_since = 0
+        self.last_update = 0
 
     def move(self):
         """Moves player on X and Y axis."""
@@ -179,13 +180,19 @@ class Player(pygame.sprite.Sprite):
             return
 
         enemies_hits = pygame.sprite.spritecollide(
-            self, self.game.enemies, True, pygame.sprite.collide_circle
+            self,
+            self.game.enemies,
+            True,
+            pygame.sprite.collide_rect_ratio(0.8),
         )
         meteors_hits = pygame.sprite.spritecollide(
-            self, self.game.meteors, True, pygame.sprite.collide_circle
+            self,
+            self.game.meteors,
+            True,
+            pygame.sprite.collide_rect_ratio(0.8),
         )
         pows_hits = pygame.sprite.spritecollide(
-            self, self.game.pows, True, pygame.sprite.collide_circle
+            self, self.game.pows, True, pygame.sprite.collide_rect_ratio(0.8)
         )
 
         for hit in enemies_hits + meteors_hits:
@@ -213,6 +220,12 @@ class Player(pygame.sprite.Sprite):
                         self.game, self, [self.game.shields, self.game.sprites]
                     )
 
+    def animate(self):
+        """Animate the ship."""
+        index = self.frames.index(self.image)
+        index = 0 if self.image == self.frames[-1] else index + 1
+        self.image = self.frames[index]
+
     def update(self):
         """Update player sprite.
 
@@ -222,6 +235,7 @@ class Player(pygame.sprite.Sprite):
         self.move()
         self.hit()
         self.shoot()
+        self.animate()
 
         # Puts the player back in the game.
         if self.hidden and pygame.time.get_ticks() - self.hidden_since > 2000:
