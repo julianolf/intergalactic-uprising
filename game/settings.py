@@ -1,7 +1,7 @@
 import os
 
 # General settings.
-FPS = 60
+FPS = 30
 WIDTH = 720
 HEIGHT = 720
 
