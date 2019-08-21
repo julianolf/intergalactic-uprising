@@ -744,7 +744,7 @@ class Meteor(pygame.sprite.Sprite):
             self.game,
             self.rect.center,
             [self.game.explosions, self.game.sprites],
-            Explosion.Type.SMOKE,
+            Explosion.Type.TWO,
         )
         self.kill()
         self.game.spawn_meteor()
@@ -764,8 +764,20 @@ class Explosion(pygame.sprite.Sprite):
         first image used to animate the explosion.
         """
 
-        FIRE = 0
-        SMOKE = 5
+        ONE = 0
+        TWO = 64
+        THREE = 135
+        FOUR = 217
+        FIVE = 291
+        END = 356
+
+        def next(self):
+            """Returns the next type."""
+            members = list(self.__class__)
+            index = members.index(self) + 1
+            if index >= len(members):
+                index = 0
+            return members[index]
 
     def __init__(self, game, pos, groups=[], xtype=None):
         """Initializes an explosion animation.
@@ -779,10 +791,11 @@ class Explosion(pygame.sprite.Sprite):
         super(Explosion, self).__init__(groups)
         self.game = game
         self.type = (
-            xtype if type(xtype) == Explosion.Type else Explosion.Type(0)
+            xtype if type(xtype) == Explosion.Type else Explosion.Type.ONE
         )
-        self.frame = self.type.value
-        self.image = self.game.explosions_img[self.frame]
+        s, e = self.type.value, self.type.next().value
+        self.frames = self.game.explosions_img[s:e]
+        self.image = self.frames[0]
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.last_update = 0
@@ -790,17 +803,14 @@ class Explosion(pygame.sprite.Sprite):
 
     def update(self):
         """Animates the explosion till it self destroy."""
-        now = pygame.time.get_ticks()
-        if now - self.last_update > 100:
-            self.last_update = now
-            self.frame += 1
-            if self.frame < self.type.value + 5:
-                center = self.rect.center
-                self.image = self.game.explosions_img[self.frame]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
-            else:
-                self.kill()
+        index = self.frames.index(self.image) + 1
+        if index < len(self.frames):
+            center = self.rect.center
+            self.image = self.frames[index]
+            self.rect = self.image.get_rect()
+            self.rect.center = center
+        else:
+            self.kill()
 
 
 class Pow(pygame.sprite.Sprite):

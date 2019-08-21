@@ -182,6 +182,9 @@ class Game(object):
         """Loads resource data like images and sfx."""
         self.spritesheet = Spritesheet(settings.SPRITESHEET_IMG)
         self.player_spritesheet = Spritesheet(settings.PLAYER_SPRITESHEET_IMG)
+        self.explosions_spritesheet = Spritesheet(
+            settings.EXPLOSIONS_SPRITESHEET_IMG
+        )
         self.player_img = [
             self.player_spritesheet.get_image(p) for p in settings.PLAYER_IMG
         ]
@@ -198,7 +201,8 @@ class Game(object):
             self.spritesheet.get_image(m) for m in settings.METEORS_IMG
         ]
         self.explosions_img = [
-            self.spritesheet.get_image(e) for e in settings.EXPLOSIONS_IMG
+            self.explosions_spritesheet.get_image(e)
+            for e in settings.EXPLOSIONS_IMG
         ]
         self.pows_img = [
             self.spritesheet.get_image(p) for p in settings.POWS_IMG

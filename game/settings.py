@@ -69,17 +69,11 @@ METEORS_IMG = (
     "meteorGrey_tiny1.png",
     "meteorGrey_tiny2.png",
 )
+EXPLOSIONS_SPRITESHEET_IMG = os.path.join(SPR_DIR, "exp_spritesheet.png")
 EXPLOSIONS_IMG = (
-    "explosion1.png",
-    "explosion2.png",
-    "explosion3.png",
-    "explosion4.png",
-    "explosion5.png",
-    "explosionSmoke1.png",
-    "explosionSmoke2.png",
-    "explosionSmoke3.png",
-    "explosionSmoke4.png",
-    "explosionSmoke5.png",
+    f"explosion{k}{i:02}.png"
+    for k, r in enumerate([64, 71, 82, 74, 65])
+    for i in range(r)
 )
 POWS_IMG = (
     "powerupBlue.png",
