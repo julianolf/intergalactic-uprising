@@ -308,6 +308,12 @@ class Enemy(pygame.sprite.Sprite):
         ):
             self.destroy()
 
+    def animate(self):
+        """Animate the ship."""
+        index = self.frames.index(self.image)
+        index = 0 if self.image == self.frames[-1] else index + 1
+        self.image = self.frames[index]
+
     def update(self):
         """Update enemy sprite.
 
@@ -315,6 +321,7 @@ class Enemy(pygame.sprite.Sprite):
         """
         self.move()
         self.hit()
+        self.animate()
 
         # If enemy left screen respawn it.
         if (
