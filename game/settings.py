@@ -93,3 +93,6 @@ MENU_FONT_FOCUS_COLOR = (255, 255, 255)
 
 # Player settings.
 SPEED = 5
+
+# Set visual resources for debugging.
+DEBUG = False

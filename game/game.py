@@ -85,7 +85,10 @@ class Game(object):
         """Put everything on screen."""
         self.fill_background()
         self.sprites.draw(self.screen)
-        pygame.draw.rect(self.screen, settings.RED, self.player.rect, 2)  # dbg
+        if settings.DEBUG:
+            # Draw a red rectangle around each sprite for debugging.
+            for sprite in self.sprites.sprites():
+                pygame.draw.rect(self.screen, settings.RED, sprite.rect, 2)
         self.draw_text(str(self.score), (self.display.current_w / 2, 10))
         self.draw_bar((self.player.energy / 100), (75, 15))
         self.draw_lives()
