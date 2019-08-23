@@ -24,28 +24,8 @@ SPRITESHEET_IMG = os.path.join(SPR_DIR, "sheet.png")
 PLAYER_SPRITESHEET_IMG = os.path.join(SPR_DIR, "player_spritesheet.png")
 PLAYER_IMG = (f"ship0{i:02}.png" for i in range(76))
 PLAYER_ICO_IMG = "playerLife3_orange.png"
-ENEMIES_IMG = (
-    "enemyBlack1.png",
-    "enemyBlack2.png",
-    "enemyBlack3.png",
-    "enemyBlack4.png",
-    "enemyBlack5.png",
-    "enemyBlue1.png",
-    "enemyBlue2.png",
-    "enemyBlue3.png",
-    "enemyBlue4.png",
-    "enemyBlue5.png",
-    "enemyGreen1.png",
-    "enemyGreen2.png",
-    "enemyGreen3.png",
-    "enemyGreen4.png",
-    "enemyGreen5.png",
-    "enemyRed1.png",
-    "enemyRed2.png",
-    "enemyRed3.png",
-    "enemyRed4.png",
-    "enemyRed5.png",
-)
+ENEMIES_SPRITESHEET_IMG = os.path.join(SPR_DIR, "enemies_spritesheet.png")
+ENEMIES_IMG = (f"ship{i}{j:02}.png" for i in range(20) for j in range(60))
 BOSSES_IMG = ["spaceShips_001.png"]
 METEORS_IMG = (
     "meteorBrown_big1.png",

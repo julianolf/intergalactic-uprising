@@ -277,11 +277,13 @@ class Enemy(pygame.sprite.Sprite):
         """
         super(Enemy, self).__init__(groups)
         self.game = game
-        random_image = random.choice(self.game.enemies_img)
-        self.image = random_image
+        rand_ship = random.randint(0, 19)
+        s, e = rand_ship * 60, (rand_ship * 60) + 60
+        self.frames = self.game.enemies_img[s:e]
+        self.image = self.frames[0]
         self.rect = self.image.get_rect()
-        self.radius = int(self.rect.width * 0.9 / 2)
-        self.endurance = self.game.enemies_img.index(random_image) + 1
+        self.radius = int(self.rect.height * 0.8 / 2)
+        self.endurance = rand_ship + 1
         self.damage = 0
         self.spawn()
 

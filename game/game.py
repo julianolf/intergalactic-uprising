@@ -182,6 +182,9 @@ class Game(object):
         """Loads resource data like images and sfx."""
         self.spritesheet = Spritesheet(settings.SPRITESHEET_IMG)
         self.player_spritesheet = Spritesheet(settings.PLAYER_SPRITESHEET_IMG)
+        self.enemies_spritesheet = Spritesheet(
+            settings.ENEMIES_SPRITESHEET_IMG
+        )
         self.explosions_spritesheet = Spritesheet(
             settings.EXPLOSIONS_SPRITESHEET_IMG
         )
@@ -192,7 +195,7 @@ class Game(object):
             settings.PLAYER_ICO_IMG
         )
         self.enemies_img = [
-            self.spritesheet.get_image(e) for e in settings.ENEMIES_IMG
+            self.enemies_spritesheet.get_image(e) for e in settings.ENEMIES_IMG
         ]
         self.bosses_img = [
             self.spritesheet.get_image(b) for b in settings.BOSSES_IMG
